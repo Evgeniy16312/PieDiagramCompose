@@ -3,13 +3,27 @@ package com.example.piediagramcompose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.piediagramcompose.content.PieCharts
+import androidx.compose.ui.unit.dp
+import com.example.piediagramcompose.content.AnimatedGapPieChart
+import com.example.piediagramcompose.content.FilterChipGroupMonths
+import com.example.piediagramcompose.content.PieData
+import com.example.piediagramcompose.content.pieDataPoints
+import com.example.piediagramcompose.mockData.chipMonthsList
 import com.example.piediagramcompose.mockData.colorsList
 import com.example.piediagramcompose.mockData.pointsValue
 import com.example.piediagramcompose.ui.theme.PieDiagramComposeTheme
@@ -19,14 +33,52 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PieDiagramComposeTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    PieCharts(colorsList = colorsList, pointsValue = pointsValue)
+                    Content()
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun Content() {
+
+    var selectedItemIndex by remember { mutableStateOf(0) }
+
+    Column(
+        modifier = Modifier
+            .background(Color.White)
+            .padding(vertical = 16.dp, horizontal = 16.dp)
+    ) {
+
+        FilterChipGroupMonths(
+            items = chipMonthsList,
+            onSelectedChanged = {
+                selectedItemIndex = it
+            }
+        )
+
+        Spacer(
+            modifier = Modifier
+                .padding(top = 24.dp)
+        )
+
+        if (selectedItemIndex <= 11) {
+            pieDataPoints = listOf(
+                PieData(pointsValue.random(), color = colorsList[0]),
+                PieData(pointsValue.random(), color = colorsList[1]),
+                PieData(pointsValue.random(), color = colorsList[2]),
+                PieData(pointsValue.random(), color = colorsList[3]),
+                PieData(pointsValue.random(), color = colorsList[4]),
+            )
+            AnimatedGapPieChart(
+                modifier = Modifier.padding(16.dp),
+                pieDataPoints
+            )
         }
     }
 }
@@ -35,6 +87,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     PieDiagramComposeTheme {
-        PieCharts(colorsList = colorsList, pointsValue = pointsValue)
+        Content()
     }
 }
