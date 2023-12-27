@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -54,10 +53,12 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Content() {
     val items: List<SalesList> = listOf(
-        SalesList("market", "low250$", "222$"),
-        SalesList("market", "low250$", "222$"),
-        SalesList("market", "low250$", "222$"),
-    )
+        SalesList("cinema", "low 23$", "43$"),
+        SalesList("sport", "low 76$", "673$"),
+        SalesList("media", "medium 597$", "2234$"),
+        SalesList("market", "low 77$", "467$"),
+        SalesList("oil", "height 1111$", "6554$"),
+    ).shuffled()
     var selectedItemIndex by remember { mutableStateOf(0) }
 
     Column(
@@ -71,11 +72,6 @@ fun Content() {
             onSelectedChanged = {
                 selectedItemIndex = it
             }
-        )
-
-        Spacer(
-            modifier = Modifier
-                .padding(top = 24.dp)
         )
 
         if (selectedItemIndex <= 11) {
@@ -93,15 +89,14 @@ fun Content() {
                     .height(300.dp),
                 pieDataPoints
             )
+
+            Spacer(
+                modifier = Modifier
+                    .padding(top = 46.dp)
+            )
+
+            SalesListComposable(items)
         }
-
-        Spacer(
-            modifier = Modifier
-                .padding(top = 24.dp)
-        )
-
-        SalesListComposable(items)
-
     }
 }
 
@@ -110,8 +105,8 @@ fun SalesListComposable(items: List<SalesList>) {
     LazyColumn {
         items(items) { item ->
             SalesListItem(item = item,
-                onClick = {})
-            Divider(color = Color.Black)
+                onClick = {}
+            )
         }
     }
 }
