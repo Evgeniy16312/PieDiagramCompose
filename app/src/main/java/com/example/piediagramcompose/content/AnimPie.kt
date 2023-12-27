@@ -6,19 +6,16 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
@@ -37,7 +34,9 @@ fun AnimatedGapPieChart(
     val gapDegrees = 16f
     val numberOfGaps = pieDataPoints.size
     val remainingDegrees = 360f - (gapDegrees * numberOfGaps)
-    val localModifier = modifier.wrapContentSize()
+    val localModifier = modifier
+        .fillMaxWidth()
+        .height(330.dp)
     val total = pieDataPoints.fold(0f) { acc, pieData -> acc + pieData.value }.div(remainingDegrees)
     var currentSum = 0f
     val arcs = pieDataPoints.mapIndexed { index, it ->
@@ -68,7 +67,6 @@ fun AnimatedGapPieChart(
 
     Canvas(
         modifier = localModifier
-            .scale(1.1f)
             .fillMaxSize()
     ) {
         val stroke = Stroke(width = 80f, cap = StrokeCap.Round)
@@ -85,16 +83,5 @@ fun AnimatedGapPieChart(
                 topLeft = Offset(x = padding / 2, y = padding / 2)
             )
         }
-    }
-}
-
-@Preview
-@Composable
-fun Preview_GapPieChart() {
-    Surface {
-        AnimatedGapPieChart(
-            modifier = Modifier.padding(32.dp),
-            pieDataPoints
-        )
     }
 }

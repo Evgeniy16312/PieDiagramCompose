@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -64,7 +63,11 @@ fun Content() {
     Column(
         modifier = Modifier
             .background(Color.White)
-            .padding(vertical = 16.dp, horizontal = 16.dp)
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp
+            )
     ) {
 
         FilterChipGroupMonths(
@@ -84,9 +87,7 @@ fun Content() {
             )
             AnimatedGapPieChart(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-                    .height(300.dp),
+                    .fillMaxWidth(),
                 pieDataPoints
             )
 
@@ -102,7 +103,10 @@ fun Content() {
 
 @Composable
 fun SalesListComposable(items: List<SalesList>) {
-    LazyColumn {
+    LazyColumn(
+        modifier = Modifier
+            .background(Color.White)
+    ) {
         items(items) { item ->
             SalesListItem(item = item,
                 onClick = {}

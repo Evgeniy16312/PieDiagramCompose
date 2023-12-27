@@ -1,6 +1,7 @@
 package com.example.piediagramcompose.content
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,13 +19,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.piediagramcompose.R
-import com.example.piediagramcompose.ui.theme.OrangeLight
-import com.example.piediagramcompose.ui.theme.PurpleLight
+import com.example.piediagramcompose.ui.theme.Background
+import com.example.piediagramcompose.ui.theme.GreyLight
 
 
 @Composable
@@ -37,23 +41,34 @@ fun SalesListItem(
         R.drawable.ic_savings,
         R.drawable.ic_surprize,
     )
-    Box {
+    Box(
+        modifier = Modifier
+            .background(Color.White)
+            .padding(
+                vertical = 8.dp,
+                horizontal = 8.dp
+            )
+            .height(80.dp)
+    ) {
         Row(
             modifier = Modifier
                 .clickable(onClick = onClick)
-                .clip(RoundedCornerShape(4.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .fillMaxSize()
-                .padding(vertical = 8.dp),
+                .background(Background),
             verticalAlignment = Alignment.CenterVertically,
         ) {
 
             Image(
                 modifier = Modifier
-                    .size(96.dp, 54.dp),
+                    .size(96.dp, 54.dp)
+                    .fillMaxSize(),
+                contentScale = ContentScale.Fit,
                 painter = painterResource(id = iconList.random()),
                 contentDescription = "Content",
                 alignment = Alignment.Center
             )
+
 
             Box(
                 modifier = Modifier
@@ -62,6 +77,7 @@ fun SalesListItem(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier
+                        .padding(start = 8.dp)
 
                 ) {
                     Text(
@@ -69,7 +85,7 @@ fun SalesListItem(
                         maxLines = 1,
                         fontSize = 22.sp,
                         overflow = TextOverflow.Ellipsis,
-                        color = PurpleLight,
+                        color = Color.Black,
                         style = MaterialTheme.typography.bodyMedium
                     )
 
@@ -78,7 +94,7 @@ fun SalesListItem(
                         maxLines = 1,
                         fontSize = 22.sp,
                         overflow = TextOverflow.Ellipsis,
-                        color = OrangeLight,
+                        color = GreyLight,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -91,7 +107,7 @@ fun SalesListItem(
                     maxLines = 1,
                     fontSize = 22.sp,
                     overflow = TextOverflow.Ellipsis,
-                    color = OrangeLight,
+                    color = Color.Black,
                     style = MaterialTheme.typography.bodyMedium
                 )
 
