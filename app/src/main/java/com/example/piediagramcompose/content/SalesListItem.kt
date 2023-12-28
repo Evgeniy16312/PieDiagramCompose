@@ -43,19 +43,21 @@ fun SalesListItem(
     )
     Box(
         modifier = Modifier
-            .background(Color.White)
+            .background(Background)
             .padding(
                 vertical = 8.dp,
                 horizontal = 8.dp
             )
             .height(80.dp)
+            .clip(RoundedCornerShape(16.dp))
+
     ) {
         Row(
             modifier = Modifier
+                .background(Color.White)
                 .clickable(onClick = onClick)
                 .clip(RoundedCornerShape(16.dp))
-                .fillMaxSize()
-                .background(Background),
+                .fillMaxSize(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
 

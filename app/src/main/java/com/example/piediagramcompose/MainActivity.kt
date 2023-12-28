@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,6 +30,7 @@ import com.example.piediagramcompose.content.pieDataPoints
 import com.example.piediagramcompose.mockData.chipMonthsList
 import com.example.piediagramcompose.mockData.colorsList
 import com.example.piediagramcompose.mockData.pointsValue
+import com.example.piediagramcompose.ui.theme.Background
 import com.example.piediagramcompose.ui.theme.PieDiagramComposeTheme
 
 class MainActivity : ComponentActivity() {
@@ -39,8 +39,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             PieDiagramComposeTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Background)
                 ) {
                     Content()
                 }
@@ -62,7 +63,7 @@ fun Content() {
 
     Column(
         modifier = Modifier
-            .background(Color.White)
+            .background(Background)
             .padding(
                 start = 16.dp,
                 end = 16.dp,
@@ -87,12 +88,14 @@ fun Content() {
             )
             AnimatedGapPieChart(
                 modifier = Modifier
+                    .background(Background)
                     .fillMaxWidth(),
                 pieDataPoints
             )
 
             Spacer(
                 modifier = Modifier
+                    .background(Background)
                     .padding(top = 46.dp)
             )
 

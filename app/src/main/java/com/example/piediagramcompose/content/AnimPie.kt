@@ -5,6 +5,7 @@ import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
+import com.example.piediagramcompose.ui.theme.Background
 import kotlinx.coroutines.launch
 
 data class ArcData(
@@ -31,13 +33,15 @@ fun AnimatedGapPieChart(
     modifier: Modifier = Modifier,
     pieDataPoints: List<PieData>,
 ) {
-    val gapDegrees = 16f
+    val gapDegrees = 12f
     val numberOfGaps = pieDataPoints.size
     val remainingDegrees = 360f - (gapDegrees * numberOfGaps)
     val localModifier = modifier
         .fillMaxWidth()
         .height(330.dp)
-    val total = pieDataPoints.fold(0f) { acc, pieData -> acc + pieData.value }.div(remainingDegrees)
+        .background(Background)
+    val total = pieDataPoints.fold(0f)
+    { acc, pieData -> acc + pieData.value }.div(remainingDegrees)
     var currentSum = 0f
     val arcs = pieDataPoints.mapIndexed { index, it ->
         val startAngle = currentSum + (index * gapDegrees)
@@ -69,7 +73,10 @@ fun AnimatedGapPieChart(
         modifier = localModifier
             .fillMaxSize()
     ) {
-        val stroke = Stroke(width = 80f, cap = StrokeCap.Round)
+        val stroke = Stroke(
+            width = 80f,
+            cap = StrokeCap.Round
+        )
         val padding = 270f
 
         arcs.map {

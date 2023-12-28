@@ -1,5 +1,6 @@
 package com.example.piediagramcompose.content
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -24,6 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.piediagramcompose.mockData.chipMonthsList
+import com.example.piediagramcompose.ui.theme.Background
+import com.example.piediagramcompose.ui.theme.GreyLight
 import com.example.piediagramcompose.ui.theme.OrangeLight
 import com.example.piediagramcompose.ui.theme.PieDiagramComposeTheme
 
@@ -41,13 +44,14 @@ fun FilterChipGroupMonths(
         userScrollEnabled = true,
         modifier = Modifier
             .padding(4.dp, 4.dp)
+            .background(Background)
     ) {
 
         items(items.size) { index: Int ->
             FilterChip(
                 modifier = Modifier
                     .padding(end = 6.dp)
-                    .height(42.dp),
+                    .height(52.dp),
                 selected = items[selectedItemIndex] == items[index],
                 onClick = {
                     selectedItemIndex = index
@@ -65,7 +69,7 @@ fun FilterChipGroupMonths(
                     selectedContainerColor = OrangeLight
                 ),
                 border = FilterChipDefaults.filterChipBorder(
-                    borderColor = Color.White
+                    borderColor = GreyLight
                 ),
 
                 leadingIcon = {
@@ -86,10 +90,9 @@ fun FilterChipGroupMonths(
 @Composable
 fun GreetingPreview() {
     PieDiagramComposeTheme {
-        FilterChipGroupMonths(items = chipMonthsList,
-            onSelectedChanged = {
-
-            }
+        FilterChipGroupMonths(
+            items = chipMonthsList,
+            onSelectedChanged = {}
         )
     }
 }
