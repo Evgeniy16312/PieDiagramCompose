@@ -63,14 +63,13 @@ fun SalesListItem(
 
             Image(
                 modifier = Modifier
-                    .size(96.dp, 54.dp)
+                    .size(76.dp, 54.dp)
                     .fillMaxSize(),
                 contentScale = ContentScale.Fit,
                 painter = painterResource(id = iconList.random()),
                 contentDescription = "Content",
                 alignment = Alignment.Center
             )
-
 
             Box(
                 modifier = Modifier
@@ -112,7 +111,6 @@ fun SalesListItem(
                     color = Color.Black,
                     style = MaterialTheme.typography.bodyMedium
                 )
-
             }
         }
     }

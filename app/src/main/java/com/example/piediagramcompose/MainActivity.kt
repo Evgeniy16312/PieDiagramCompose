@@ -3,20 +3,25 @@ package com.example.piediagramcompose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.TargetBasedAnimation
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +57,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Content() {
+
     val items: List<SalesList> = listOf(
         SalesList("cinema", "low 23$", "43$"),
         SalesList("sport", "low 76$", "673$"),
@@ -59,6 +65,7 @@ fun Content() {
         SalesList("market", "low 77$", "467$"),
         SalesList("oil", "height 1111$", "6554$"),
     ).shuffled()
+
     var selectedItemIndex by remember { mutableStateOf(0) }
 
     Column(
@@ -93,12 +100,6 @@ fun Content() {
                 pieDataPoints
             )
 
-            Spacer(
-                modifier = Modifier
-                    .background(Background)
-                    .padding(top = 46.dp)
-            )
-
             SalesListComposable(items)
         }
     }
@@ -106,13 +107,35 @@ fun Content() {
 
 @Composable
 fun SalesListComposable(items: List<SalesList>) {
+    var state by remember { mutableStateOf(false) }
+    val anim = remember {
+        TargetBasedAnimation(
+            animationSpec = tween(durationMillis = 3500),
+            typeConverter = Float.VectorConverter,
+            initialValue = 0f,
+            targetValue = 700f,
+        )
+    }
+    var playTime by remember { mutableStateOf(0L) }
+    var animationValue by remember { mutableStateOf(0) }
+
+    LaunchedEffect(state) {
+        val startTime = withFrameNanos { it }
+        do {
+            playTime = withFrameNanos { it } - startTime
+            animationValue = anim.getValueFromNanos(playTime).toInt()
+        } while (!anim.isFinishedFromNanos(playTime))
+    }
+
     LazyColumn(
         modifier = Modifier
             .background(Color.White)
+            .size(animationValue.dp),
     ) {
         items(items) { item ->
             SalesListItem(item = item,
-                onClick = {}
+                onClick = {
+                }
             )
         }
     }

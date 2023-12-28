@@ -19,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,9 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.piediagramcompose.mockData.chipMonthsList
 import com.example.piediagramcompose.ui.theme.Background
-import com.example.piediagramcompose.ui.theme.GreyLight
-import com.example.piediagramcompose.ui.theme.OrangeLight
 import com.example.piediagramcompose.ui.theme.PieDiagramComposeTheme
+import com.example.piediagramcompose.ui.theme.PurpleLight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,15 +43,17 @@ fun FilterChipGroupMonths(
     LazyRow(
         userScrollEnabled = true,
         modifier = Modifier
-            .padding(4.dp, 4.dp)
             .background(Background)
     ) {
 
         items(items.size) { index: Int ->
+
             FilterChip(
                 modifier = Modifier
                     .padding(end = 6.dp)
-                    .height(52.dp),
+                    .height(48.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Background),
                 selected = items[selectedItemIndex] == items[index],
                 onClick = {
                     selectedItemIndex = index
@@ -66,10 +68,11 @@ fun FilterChipGroupMonths(
                 },
                 shape = RoundedCornerShape(16),
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = OrangeLight
+                    selectedContainerColor = PurpleLight
                 ),
                 border = FilterChipDefaults.filterChipBorder(
-                    borderColor = GreyLight
+                    borderColor = Color.White,
+                    borderWidth = 3.dp
                 ),
 
                 leadingIcon = {
@@ -85,6 +88,7 @@ fun FilterChipGroupMonths(
         }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable

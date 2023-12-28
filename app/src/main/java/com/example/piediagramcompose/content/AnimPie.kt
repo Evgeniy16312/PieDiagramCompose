@@ -33,7 +33,7 @@ fun AnimatedGapPieChart(
     modifier: Modifier = Modifier,
     pieDataPoints: List<PieData>,
 ) {
-    val gapDegrees = 12f
+    val gapDegrees = 15f
     val numberOfGaps = pieDataPoints.size
     val remainingDegrees = 360f - (gapDegrees * numberOfGaps)
     val localModifier = modifier
