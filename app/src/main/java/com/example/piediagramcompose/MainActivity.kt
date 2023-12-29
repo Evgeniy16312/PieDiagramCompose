@@ -8,6 +8,7 @@ import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -100,6 +101,8 @@ fun Content() {
                 pieDataPoints
             )
 
+            Spacer(modifier = Modifier.padding(top = 56.dp))
+
             SalesListComposable(items)
         }
     }
@@ -107,7 +110,7 @@ fun Content() {
 
 @Composable
 fun SalesListComposable(items: List<SalesList>) {
-    var state by remember { mutableStateOf(false) }
+    val state by remember { mutableStateOf(false) }
     val anim = remember {
         TargetBasedAnimation(
             animationSpec = tween(durationMillis = 3500),
