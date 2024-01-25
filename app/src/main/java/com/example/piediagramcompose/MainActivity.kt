@@ -29,13 +29,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.piediagramcompose.content.AnimatedGapPieChart
 import com.example.piediagramcompose.content.FilterChipGroupMonths
-import com.example.piediagramcompose.content.PieData
 import com.example.piediagramcompose.content.SalesList
 import com.example.piediagramcompose.content.SalesListItem
-import com.example.piediagramcompose.content.pieDataPoints
 import com.example.piediagramcompose.mockData.chipMonthsList
-import com.example.piediagramcompose.mockData.colorsList
-import com.example.piediagramcompose.mockData.pointsValue
+import com.example.piediagramcompose.mockData.pieDataPoints
+import com.example.piediagramcompose.mockData.populateList
 import com.example.piediagramcompose.ui.theme.Background
 import com.example.piediagramcompose.ui.theme.PieDiagramComposeTheme
 
@@ -49,7 +47,19 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(Background)
                 ) {
-                    Content()
+
+                    Column(
+                        modifier = Modifier
+                            .background(Background)
+                            .padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = 16.dp
+                            )
+                    ) {
+
+                        Content()
+                    }
                 }
             }
         }
@@ -59,13 +69,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Content() {
 
-    val items: List<SalesList> = listOf(
-        SalesList("cinema", "low 23$", "43$"),
-        SalesList("sport", "low 76$", "673$"),
-        SalesList("media", "medium 597$", "2234$"),
-        SalesList("market", "low 77$", "467$"),
-        SalesList("oil", "height 1111$", "6554$"),
-    ).shuffled()
+    populateList()
 
     var selectedItemIndex by remember { mutableStateOf(0) }
 
@@ -87,23 +91,16 @@ fun Content() {
         )
 
         if (selectedItemIndex <= 11) {
-            pieDataPoints = listOf(
-                PieData(pointsValue.random(), color = colorsList[0]),
-                PieData(pointsValue.random(), color = colorsList[1]),
-                PieData(pointsValue.random(), color = colorsList[2]),
-                PieData(pointsValue.random(), color = colorsList[3]),
-                PieData(pointsValue.random(), color = colorsList[4]),
-            )
             AnimatedGapPieChart(
                 modifier = Modifier
                     .background(Background)
                     .fillMaxWidth(),
-                pieDataPoints
+                pieDataPoints()
             )
 
             Spacer(modifier = Modifier.padding(top = 56.dp))
 
-            SalesListComposable(items)
+            SalesListComposable(populateList())
         }
     }
 }
@@ -137,6 +134,7 @@ fun SalesListComposable(items: List<SalesList>) {
     ) {
         items(items) { item ->
             SalesListItem(item = item,
+                modifier = Modifier,
                 onClick = {
                 }
             )
@@ -148,6 +146,6 @@ fun SalesListComposable(items: List<SalesList>) {
 @Composable
 fun GreetingPreview() {
     PieDiagramComposeTheme {
-        Content()
+        MainScreenContent()
     }
 }

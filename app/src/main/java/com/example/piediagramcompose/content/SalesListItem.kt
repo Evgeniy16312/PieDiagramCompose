@@ -33,6 +33,7 @@ import com.example.piediagramcompose.ui.theme.GreyLight
 @Composable
 fun SalesListItem(
     item: SalesList,
+    modifier: Modifier,
     onClick: () -> Unit,
 ) {
     val iconList = mutableListOf(
