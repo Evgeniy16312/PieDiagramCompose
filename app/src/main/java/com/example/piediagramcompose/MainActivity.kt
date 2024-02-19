@@ -3,37 +3,23 @@ package com.example.piediagramcompose
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.core.TargetBasedAnimation
-import androidx.compose.animation.core.VectorConverter
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.piediagramcompose.content.AnimatedGapPieChart
 import com.example.piediagramcompose.content.FilterChipGroupMonths
-import com.example.piediagramcompose.content.SalesList
-import com.example.piediagramcompose.content.SalesListItem
+import com.example.piediagramcompose.content.PieChart
 import com.example.piediagramcompose.mockData.chipMonthsList
-import com.example.piediagramcompose.mockData.pieDataPoints
-import com.example.piediagramcompose.mockData.populateList
 import com.example.piediagramcompose.ui.theme.Background
 import com.example.piediagramcompose.ui.theme.PieDiagramComposeTheme
 
@@ -42,110 +28,95 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PieDiagramComposeTheme {
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Background)
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center
                 ) {
 
-                    Column(
+                    Surface(
                         modifier = Modifier
+                            .fillMaxSize()
                             .background(Background)
-                            .padding(
-                                start = 16.dp,
-                                end = 16.dp,
-                                top = 16.dp
-                            )
                     ) {
-
-                        Content()
+                        Column(
+                            modifier = Modifier
+                                .background(Background)
+                                .padding(
+                                    start = 16.dp,
+                                    end = 16.dp,
+                                    top = 16.dp
+                                )
+                        ) {
+                            Content()
+                        }
                     }
                 }
             }
         }
     }
-}
 
-@Composable
-fun Content() {
-
-    populateList()
-
-    var selectedItemIndex by remember { mutableStateOf(0) }
-
-    Column(
-        modifier = Modifier
-            .background(Background)
-            .padding(
-                start = 16.dp,
-                end = 16.dp,
-                top = 16.dp
-            )
-    ) {
-
-        FilterChipGroupMonths(
-            items = chipMonthsList,
-            onSelectedChanged = {
-                selectedItemIndex = it
-            }
+    @Composable
+    fun Content() {
+        var selectedItemIndex by remember { mutableStateOf(0) }
+        val sumCenter = (1000 until 2000).random()
+        val selectedMonths = "${sumCenter}$"
+        val percent = listOf(
+            (10 until 30).random(),
+            (10 until 30).random(),
+            (10 until 30).random(),
+            (10 until 30).random(),
+            (10 until 30).random()
         )
 
-        if (selectedItemIndex <= 11) {
-            AnimatedGapPieChart(
-                modifier = Modifier
-                    .background(Background)
-                    .fillMaxWidth(),
-                pieDataPoints()
-            )
-
-            Spacer(modifier = Modifier.padding(top = 56.dp))
-
-            SalesListComposable(populateList())
-        }
-    }
-}
-
-@Composable
-fun SalesListComposable(items: List<SalesList>) {
-    val state by remember { mutableStateOf(false) }
-    val anim = remember {
-        TargetBasedAnimation(
-            animationSpec = tween(durationMillis = 3500),
-            typeConverter = Float.VectorConverter,
-            initialValue = 0f,
-            targetValue = 700f,
+        val percentList = listOf(
+            "${percent[0]}%",
+            "${percent[1]}%",
+            "${percent[2]}%",
+            "${percent[3]}%",
+            "${percent[4]}%",
         )
-    }
-    var playTime by remember { mutableStateOf(0L) }
-    var animationValue by remember { mutableStateOf(0) }
 
-    LaunchedEffect(state) {
-        val startTime = withFrameNanos { it }
-        do {
-            playTime = withFrameNanos { it } - startTime
-            animationValue = anim.getValueFromNanos(playTime).toInt()
-        } while (!anim.isFinishedFromNanos(playTime))
-    }
+        val pointsValueList = listOf(
+            (100 until 150).random(),
+            (100 until 150).random(),
+            (100 until 150).random(),
+            (100 until 150).random(),
+            (100 until 150).random()
+        )
 
-    LazyColumn(
-        modifier = Modifier
-            .background(Color.White)
-            .size(animationValue.dp),
-    ) {
-        items(items) { item ->
-            SalesListItem(item = item,
-                modifier = Modifier,
-                onClick = {
+        Column(
+            modifier = Modifier
+                .background(Background)
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    top = 16.dp
+                )
+        ) {
+
+            FilterChipGroupMonths(
+                items = chipMonthsList,
+                onSelectedChanged = {
+                    selectedItemIndex = it
                 }
             )
+
+            if (selectedItemIndex <= 11) {
+                PieChart(
+                    data = pointsValueList,
+                    centerMonth = chipMonthsList[selectedItemIndex],
+                    centerSum = selectedMonths,
+                    percentValue = percentList,
+                )
+            }
         }
     }
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PieDiagramComposeTheme {
-        MainScreenContent()
+    @Preview(showBackground = true)
+    @Composable
+    fun GreetingPreview() {
+        PieDiagramComposeTheme {
+            MainScreenContent()
+        }
     }
 }

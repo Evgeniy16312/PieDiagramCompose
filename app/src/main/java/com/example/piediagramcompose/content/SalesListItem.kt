@@ -80,7 +80,6 @@ fun SalesListItem(
                     verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier
                         .padding(start = 8.dp)
-
                 ) {
                     Text(
                         text = item.categoriesCost,
@@ -94,7 +93,7 @@ fun SalesListItem(
                     Text(
                         text = item.averageCost,
                         maxLines = 1,
-                        fontSize = 22.sp,
+                        fontSize = 18.sp,
                         overflow = TextOverflow.Ellipsis,
                         color = GreyLight,
                         style = MaterialTheme.typography.bodyMedium
@@ -110,7 +109,7 @@ fun SalesListItem(
                     fontSize = 22.sp,
                     overflow = TextOverflow.Ellipsis,
                     color = Color.Black,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.headlineLarge
                 )
             }
         }

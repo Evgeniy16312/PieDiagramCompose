@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.example.piediagramcompose.mockData.chipMonthsList
 import com.example.piediagramcompose.ui.theme.Background
 import com.example.piediagramcompose.ui.theme.PieDiagramComposeTheme
-import com.example.piediagramcompose.ui.theme.PurpleLight
+import com.example.piediagramcompose.ui.theme.Purple80
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,7 +51,7 @@ fun FilterChipGroupMonths(
             FilterChip(
                 modifier = Modifier
                     .padding(end = 6.dp)
-                    .height(48.dp)
+                    .height(38.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .background(Background),
                 selected = items[selectedItemIndex] == items[index],
@@ -66,9 +66,9 @@ fun FilterChipGroupMonths(
                         fontSize = 18.sp
                     )
                 },
-                shape = RoundedCornerShape(16),
+                shape = RoundedCornerShape(40),
                 colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = PurpleLight
+                    selectedContainerColor = Purple80
                 ),
                 border = FilterChipDefaults.filterChipBorder(
                     borderColor = Color.White,
