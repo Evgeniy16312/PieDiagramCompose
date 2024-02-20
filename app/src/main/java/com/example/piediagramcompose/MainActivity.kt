@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.piediagramcompose.content.FilterChipGroupMonths
 import com.example.piediagramcompose.content.PieChart
+import com.example.piediagramcompose.mockData.chartBarWidth
 import com.example.piediagramcompose.mockData.chipMonthsList
 import com.example.piediagramcompose.ui.theme.Background
 import com.example.piediagramcompose.ui.theme.PieDiagramComposeTheme
@@ -107,6 +108,7 @@ class MainActivity : ComponentActivity() {
                     centerMonth = chipMonthsList[selectedItemIndex],
                     centerSum = selectedMonths,
                     percentValue = percentList,
+                    chartBarWidth = chartBarWidth
                 )
             }
         }

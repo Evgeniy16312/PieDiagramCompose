@@ -35,12 +35,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.piediagramcompose.mockData.colorsList
 import com.example.piediagramcompose.mockData.populateList
-import com.example.piediagramcompose.ui.theme.AquaLight
-import com.example.piediagramcompose.ui.theme.GreenLight
-import com.example.piediagramcompose.ui.theme.OrangeLight
-import com.example.piediagramcompose.ui.theme.PurpleLight
-import com.example.piediagramcompose.ui.theme.YellowLight
 
 @Composable
 fun PieChart(
@@ -49,7 +45,7 @@ fun PieChart(
     centerSum: String,
     percentValue: List<String>,
     radiusOuter: Dp = 110.dp,
-    chartBarWidth: Dp = 20.dp,
+    chartBarWidth: List<Float>,
     animDuration: Int = 1000,
 ) {
     val totalSum = data.sum()
@@ -58,14 +54,6 @@ fun PieChart(
     data.forEachIndexed { index, value ->
         floatValue.add(index, 360 * value.toFloat() / totalSum.toFloat())
     }
-
-    val colors = listOf(
-        PurpleLight,
-        YellowLight,
-        GreenLight,
-        AquaLight,
-        OrangeLight
-    )
 
     var animationPlayed by remember {
         mutableStateOf(false)
@@ -125,12 +113,12 @@ fun PieChart(
             ) {
                 floatValue.forEachIndexed { index, value ->
                     drawArc(
-                        color = colors[index],
+                        color = colorsList[index],
                         startAngle = lastValue,
                         sweepAngle = value - 14f,
                         useCenter = false,
                         style = Stroke(
-                            width = chartBarWidth.toPx(),
+                            width = chartBarWidth[index],
                             cap = StrokeCap.Round
                         )
                     )
