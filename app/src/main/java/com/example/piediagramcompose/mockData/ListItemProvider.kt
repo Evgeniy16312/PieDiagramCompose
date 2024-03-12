@@ -20,5 +20,5 @@ fun populateList(): List<SalesList> {
         SalesList("media", "medium 597$", "2234$"),
         SalesList("market", "low 77$", "467$"),
         SalesList("oil", "height 1111$", "6554$"),
-    ).shuffled()
+    )
 }
