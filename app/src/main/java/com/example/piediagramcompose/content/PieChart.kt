@@ -8,16 +8,15 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,41 +28,53 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.piediagramcompose.mockData.colorsList
 import com.example.piediagramcompose.mockData.populateList
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.sin
 
 @Composable
 fun PieChart(
-    data: List<Int>,
-    centerMonth: String,
-    centerSum: String,
-    percentValue: List<String>,
+    modifier: Modifier = Modifier,
+    selectedMonths: String,
     radiusOuter: Dp = 110.dp,
-    chartBarWidth: List<Float>,
     animDuration: Int = 1000,
+    parts: List<Float>,
+    onPartClick: (Int, Color) -> Unit,
 ) {
-    val totalSum = data.sum()
-    val floatValue = mutableListOf<Float>()
-    val dotRects = ArrayList<Rect>()
 
-    data.forEachIndexed { index, value ->
-        floatValue.add(index, 360 * value.toFloat() / totalSum.toFloat())
+    val strokeWidth = 20.dp
+    val strokeWidthClick = 40.dp
+    val space = 7.dp
+    val textPaint = Paint().asFrameworkPaint().apply {
+        isAntiAlias = true
+        textSize = 50f
+        color = android.graphics.Color.RED
     }
+
+    var selectedPart by remember { mutableStateOf(-1) }
+
+    val total = parts.sum()
+    val angles = parts.map { it / total * 360 }
 
     var animationPlayed by remember {
         mutableStateOf(false)
     }
-
-    var lastValue = 0f
 
     val animateSize by animateFloatAsState(
         targetValue =
@@ -77,16 +88,6 @@ fun PieChart(
     )
 
     val animateRotation by animateFloatAsState(
-        targetValue = if (animationPlayed) 90f * 11f else 0f,
-        animationSpec = tween(
-            durationMillis = animDuration,
-            delayMillis = 0,
-            easing = LinearOutSlowInEasing
-        ),
-        label = ""
-    )
-
-    val animateText by animateFloatAsState(
         targetValue = if (animationPlayed) 360f else 0f,
         animationSpec = tween(
             durationMillis = animDuration,
@@ -99,92 +100,88 @@ fun PieChart(
     LaunchedEffect(key1 = true) {
         animationPlayed = true
     }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 40.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier.size(animateSize.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Canvas(
-                modifier = Modifier
-                    .size(radiusOuter * 2f)
-                    .rotate(animateRotation)
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onTap = { tapOffset ->
-                                var index = 0
-                                for (rect in dotRects) {
-                                    if (rect.contains(tapOffset)) {
-                                        break
-                                    }
-                                    index++
-                                }
-                            }
-                        )
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .size(animateSize.dp)
+            .pointerInput(Unit) {
+                detectTapGestures { offset ->
+                    val size = this.size
+                    val anglePoint = calculateAngle(offset, size)
+                    var currentAngle = 0f
+                    for ((index, partAngle) in angles.withIndex()) {
+                        if (currentAngle + partAngle > anglePoint) {
+                            selectedPart = index
+                            val selectedColor = colorsList[index]
+                            onPartClick(index, selectedColor)
+                            break
+                        }
+                        currentAngle += partAngle
                     }
-            ) {
-                floatValue.forEachIndexed { index, value ->
-                    drawArc(
-                        color = colorsList[index],
-                        startAngle = lastValue,
-                        sweepAngle = value - 14f,
-                        useCenter = false,
-                        style = Stroke(
-                            width = chartBarWidth[index],
-                            cap = StrokeCap.Round
-                        )
-                    )
-                    lastValue += value
                 }
+            },
+    ) {
+        Canvas(
+            modifier = Modifier
+                .fillMaxSize()
+                .rotate(animateRotation)
+        ) {
+            var startAngle = 0f
+            parts.indices.forEach { i ->
+                val color = colorsList[i]
+                val sweepAngle = angles[i]
+                drawArc(
+                    color = color,
+                    startAngle = startAngle,
+                    sweepAngle = sweepAngle - space.toPx(),
+                    useCenter = false,
+                    topLeft = Offset(
+                        x = (size.width - size.minDimension) / 2,
+                        y = (size.height - size.minDimension) / 2
+                    ),
+                    size = Size(size.minDimension, size.minDimension),
+                    style = Stroke(
+                        width = if (i == selectedPart) strokeWidthClick.toPx() else strokeWidth.toPx(),
+                        cap = StrokeCap.Round
+                    )
+                )
+
+                val labelRadius =
+                    size.minDimension / 2f // Радиус, на котором должен находиться текст
+                val textAngleDegrees = startAngle + sweepAngle / 2 - space.toPx() / 2
+                val textAngleRadians = Math.toRadians(textAngleDegrees.toDouble())
+                val labelX = center.x + labelRadius * cos(textAngleRadians).toFloat()
+                val labelY = center.y + labelRadius * sin(textAngleRadians).toFloat()
+
+                // Отрисовка значения занятой доли в каждой части канваса,
+                drawContext.canvas.nativeCanvas.drawText(
+                    "${parts[i]}",
+                    labelX,
+                    labelY,
+                    textPaint
+                )
+
+                // Отрисовка текста в центре канваса
+                drawIntoCanvas {
+                    val textPaints = Paint().asFrameworkPaint().apply {
+                        isAntiAlias = true
+                        textSize = 50f
+                    }
+
+                    val textBounds = android.graphics.Rect()
+                    textPaints.getTextBounds(selectedMonths, 0, selectedMonths.length, textBounds)
+                    it.nativeCanvas.drawText(
+                        selectedMonths,
+                        size.width / 2f - textBounds.exactCenterX(),
+                        size.height / 2f + textBounds.exactCenterY(),
+                        textPaints
+                    )
+                }
+
+                startAngle += sweepAngle
             }
-            CenterText(
-                mounts = centerMonth,
-                centerSum = centerSum
-            )
-
-            SalesMoneyInPercent(
-                animateText,
-                95,
-                -95,
-                percentValue.random()
-            )
-
-            SalesMoneyInPercent(
-                animateText,
-                -95,
-                -95,
-                percentValue.random()
-            )
-
-            SalesMoneyInPercent(
-                animateText,
-                -95,
-                95,
-                percentValue.random()
-            )
-
-            SalesMoneyInPercent(
-                animateText,
-                105,
-                80,
-                percentValue.random()
-            )
-
-            SalesMoneyInPercent(
-                animateText,
-                0,
-                125,
-                percentValue.random()
-            )
         }
     }
-
-    Spacer(modifier = Modifier.padding(top = 60.dp))
 
     SalesListComposable(populateList())
 }
@@ -226,51 +223,48 @@ fun SalesListComposable(items: List<SalesList>) {
     }
 }
 
-
-@Composable
-fun SalesMoneyInPercent(animateText: Float, x: Int, y: Int, text: String) {
-    Box(
-        modifier = Modifier
-            .offset(x = (x).dp, y = (y).dp)
-            .size(40.dp)
-            .background(
-                color = Color.White,
-                shape = RoundedCornerShape(10.dp)
-            )
-            .rotate(animateText),
-        contentAlignment = Alignment.Center
-    )
-    {
-        Text(
-            text = text,
-            fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
-            color = Color.Black
-        )
-    }
+fun calculateAngle(offset: Offset, size: IntSize): Double {
+    val x = offset.x
+    val y = offset.y
+    val centerX = size.width / 2
+    val centerY = size.height / 2
+    val dx = x - centerX
+    val dy = y - centerY
+    return (atan2(dy.toDouble(), dx.toDouble()) * (180 / Math.PI) + 360) % 360
 }
 
 @Composable
-fun CenterText(
-    mounts: String,
-    centerSum: String,
-) {
+fun MyContent(months: String) {
+    var clickedPart by remember { mutableStateOf("") }
+    var selectedColor by remember { mutableStateOf(Color.Black) }
+
+    val parts = remember { listOf(30f, 20f, 10f, 20f, 20f) }
+
     Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            modifier = Modifier.padding(4.dp),
-            text = mounts,
-            fontWeight = FontWeight.Medium,
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
-        Text(
-            modifier = Modifier.padding(4.dp),
-            text = centerSum,
-            fontWeight = FontWeight.Medium,
-            fontSize = 24.sp,
-            color = Color.Black
-        )
+        PieChart(
+            modifier = Modifier
+                .padding(vertical = 40.dp, horizontal = 24.dp)
+                .size(280.dp),
+            selectedMonths = months,
+            parts = parts
+        ) { _, color ->
+            clickedPart = months
+            selectedColor = color
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .wrapContentSize(Alignment.Center),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = clickedPart,
+                style = TextStyle(fontSize = 18.sp, color = selectedColor)
+            )
+        }
     }
 }
