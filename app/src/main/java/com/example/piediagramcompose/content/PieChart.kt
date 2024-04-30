@@ -59,8 +59,8 @@ fun PieChart(
     val space = 7.dp
     val textPaint = Paint().asFrameworkPaint().apply {
         isAntiAlias = true
-        textSize = 50f
-        color = android.graphics.Color.RED
+        textSize = 40f
+        color = android.graphics.Color.BLACK
     }
 
     var selectedPart by remember { mutableStateOf(-1) }
@@ -154,7 +154,7 @@ fun PieChart(
 
                 // Отрисовка значения занятой доли в каждой части канваса,
                 drawContext.canvas.nativeCanvas.drawText(
-                    "${parts[i]}",
+                    "${parts[i]}%",
                     labelX,
                     labelY,
                     textPaint
