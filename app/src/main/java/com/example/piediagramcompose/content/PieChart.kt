@@ -6,7 +6,6 @@ import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,10 +13,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,13 +34,12 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.piediagramcompose.mockData.colorsList
 import com.example.piediagramcompose.mockData.populateList
+import com.example.piediagramcompose.ui.theme.Background
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
@@ -52,12 +48,12 @@ import kotlin.math.sin
 fun PieChart(
     modifier: Modifier = Modifier,
     selectedMonths: String,
+    valueSum: Int,
     radiusOuter: Dp = 110.dp,
     animDuration: Int = 1000,
     parts: List<Float>,
     onPartClick: (Int, Color) -> Unit,
 ) {
-
     val strokeWidth = 20.dp
     val strokeWidthClick = 40.dp
     val space = 7.dp
@@ -68,6 +64,8 @@ fun PieChart(
     }
 
     var selectedPart by remember { mutableStateOf(-1) }
+
+    var colorPart by remember { mutableStateOf(Background) }
 
     val total = parts.sum()
     val angles = parts.map { it / total * 360 }
@@ -114,6 +112,7 @@ fun PieChart(
                             selectedPart = index
                             val selectedColor = colorsList[index]
                             onPartClick(index, selectedColor)
+                            colorPart = selectedColor
                             break
                         }
                         currentAngle += partAngle
@@ -178,16 +177,34 @@ fun PieChart(
                     )
                 }
 
+                drawIntoCanvas {
+                    val textPaints = Paint().asFrameworkPaint().apply {
+                        isAntiAlias = true
+                        textSize = 50f
+                    }
+
+                    val textBounds = android.graphics.Rect()
+                    textPaints.getTextBounds(selectedMonths, 0, selectedMonths.length, textBounds)
+                    it.nativeCanvas.drawText(
+                        (valueSum * 5 + 720).toString() + "$",
+                        size.width / 2f - textBounds.exactCenterX(),
+                        size.height / 1.6f + textBounds.exactCenterY(),
+                        textPaints
+                    )
+                }
+
                 startAngle += sweepAngle
             }
         }
     }
 
-    SalesListComposable(populateList())
+    SalesListComposable(
+        populateList(valueSum), color = colorPart, selected = selectedPart
+    )
 }
 
 @Composable
-fun SalesListComposable(items: List<SalesList>) {
+fun SalesListComposable(items: List<SalesList>, color: Color, selected: Int) {
     val state by remember { mutableStateOf(false) }
     val anim = remember {
         TargetBasedAnimation(
@@ -197,6 +214,7 @@ fun SalesListComposable(items: List<SalesList>) {
             targetValue = 700f,
         )
     }
+    val selectedColor by remember { mutableStateOf(Color.White) }
     var playTime by remember { mutableStateOf(0L) }
     var animationValue by remember { mutableStateOf(0) }
 
@@ -210,12 +228,15 @@ fun SalesListComposable(items: List<SalesList>) {
 
     LazyColumn(
         modifier = Modifier
-            .background(Color.White)
             .size(animationValue.dp),
     ) {
-        items(items) { item ->
+        itemsIndexed(items) { index, item ->
             SalesListItem(item = item,
-                modifier = Modifier,
+                color = if (index == selected) {
+                    color
+                } else {
+                    selectedColor
+                },
                 onClick = {
                 }
             )
@@ -234,9 +255,9 @@ fun calculateAngle(offset: Offset, size: IntSize): Double {
 }
 
 @Composable
-fun MyContent(months: String) {
+fun MyContent(months: String, valueSum: Int) {
     var clickedPart by remember { mutableStateOf("") }
-    var selectedColor by remember { mutableStateOf(Color.Black) }
+    var selectedColor by remember { mutableStateOf(Background) }
 
     val parts = remember { listOf(30f, 20f, 10f, 20f, 20f) }
 
@@ -250,21 +271,11 @@ fun MyContent(months: String) {
                 .padding(vertical = 40.dp, horizontal = 24.dp)
                 .size(280.dp),
             selectedMonths = months,
-            parts = parts
+            parts = parts,
+            valueSum = valueSum
         ) { _, color ->
             clickedPart = months
             selectedColor = color
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .wrapContentSize(Alignment.Center),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = clickedPart,
-                style = TextStyle(fontSize = 18.sp, color = selectedColor)
-            )
         }
     }
 }

@@ -32,8 +32,8 @@ import com.example.piediagramcompose.ui.theme.GreyLight
 
 @Composable
 fun SalesListItem(
+    color: Color,
     item: SalesList,
-    modifier: Modifier,
     onClick: () -> Unit,
 ) {
     val iconList = mutableListOf(
@@ -55,7 +55,7 @@ fun SalesListItem(
     ) {
         Row(
             modifier = Modifier
-                .background(Color.White)
+                .background(color = color)
                 .clickable(onClick = onClick)
                 .clip(RoundedCornerShape(16.dp))
                 .fillMaxSize(),

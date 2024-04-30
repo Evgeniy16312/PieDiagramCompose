@@ -2,12 +2,13 @@ package com.example.piediagramcompose.mockData
 
 import com.example.piediagramcompose.content.SalesList
 
-fun populateList(): List<SalesList> {
+fun populateList(value: Int): List<SalesList> {
     return listOf(
-        SalesList("cinema", "low 23$", "43$"),
-        SalesList("sport", "low 76$", "673$"),
-        SalesList("media", "medium 597$", "2234$"),
-        SalesList("market", "low 77$", "467$"),
-        SalesList("oil", "height 1111$", "6554$"),
+        SalesList("entertainment", "last month: $value$", "${value + 45}$"),
+        SalesList("sport", "last month: $value$", "${value + 125}$"),
+        SalesList("car", "last month: $value$", "${value - 45}$"),
+        SalesList("market", "last month: $value$", "${value + 145}$"),
+        SalesList("trips", "last month: $value$", "${value + 450}$"),
     )
 }
+

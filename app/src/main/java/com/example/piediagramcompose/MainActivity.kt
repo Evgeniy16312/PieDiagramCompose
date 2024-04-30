@@ -47,6 +47,7 @@ class MainActivity : ComponentActivity() {
                                 )
                         ) {
                             var selectedItemIndex by remember { mutableStateOf(0) }
+                            val value = (10 until 500).random()
                             FilterChipGroupMonths(
                                 items = chipMonthsList,
                                 onSelectedChanged = {
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                             if (selectedItemIndex <= 11) {
-                                MyContent(chipMonthsList[selectedItemIndex])
+                                MyContent(chipMonthsList[selectedItemIndex], value)
                             }
                         }
                     }
@@ -67,7 +68,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun GreetingPreview() {
         PieDiagramComposeTheme {
-            MyContent("")
+            MyContent("", 1000)
         }
     }
 }
