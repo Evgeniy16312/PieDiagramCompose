@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.piediagramcompose.content.FilterChipGroupMonths
 import com.example.piediagramcompose.content.MyContent
+import com.example.piediagramcompose.mockData.ListValueParts
 import com.example.piediagramcompose.mockData.chipMonthsList
 import com.example.piediagramcompose.ui.theme.Background
 import com.example.piediagramcompose.ui.theme.PieDiagramComposeTheme
@@ -47,7 +48,13 @@ class MainActivity : ComponentActivity() {
                                 )
                         ) {
                             var selectedItemIndex by remember { mutableStateOf(0) }
-                            val value = (10 until 500).random()
+                            val valueSum = (10 until 500).random()
+                            val valuePartOne = (10 until 30).random().toFloat()
+                            val valuePartTwo = (10 until 30).random().toFloat()
+                            val valuePartThree = (10 until 30).random().toFloat()
+                            val valuePartFour = (10 until 30).random().toFloat()
+                            val valuePartFive = (10 until 30).random().toFloat()
+
                             FilterChipGroupMonths(
                                 items = chipMonthsList,
                                 onSelectedChanged = {
@@ -55,7 +62,17 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                             if (selectedItemIndex <= 11) {
-                                MyContent(chipMonthsList[selectedItemIndex], value)
+                                MyContent(
+                                    chipMonthsList[selectedItemIndex],
+                                    valueSum,
+                                    ListValueParts(
+                                        valuePartOne,
+                                        valuePartTwo,
+                                        valuePartThree,
+                                        valuePartFour,
+                                        valuePartFive
+                                    ),
+                                )
                             }
                         }
                     }
@@ -68,7 +85,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun GreetingPreview() {
         PieDiagramComposeTheme {
-            MyContent("", 1000)
+            MyContent("", 1000, listOf(20f, 20f, 10f, 30f, 10f))
         }
     }
 }

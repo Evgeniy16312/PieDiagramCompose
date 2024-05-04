@@ -25,6 +25,7 @@ import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -54,12 +55,24 @@ fun PieChart(
     parts: List<Float>,
     onPartClick: (Int, Color) -> Unit,
 ) {
-    val strokeWidth = 20.dp
-    val strokeWidthClick = 40.dp
+    val strokeWidth = 25.dp
+    val strokeWidthClick = 45.dp
     val space = 7.dp
     val textPaint = Paint().asFrameworkPaint().apply {
         isAntiAlias = true
         textSize = 40f
+        color = android.graphics.Color.BLACK
+    }
+
+    val textPaintCenterTop = Paint().asFrameworkPaint().apply {
+        isAntiAlias = true
+        textSize = 60f
+        color = android.graphics.Color.GRAY
+    }
+
+    val textPaintCenterBottom = Paint().asFrameworkPaint().apply {
+        isAntiAlias = true
+        textSize = 60f
         color = android.graphics.Color.BLACK
     }
 
@@ -152,44 +165,51 @@ fun PieChart(
                 val labelX = center.x + labelRadius * cos(textAngleRadians).toFloat()
                 val labelY = center.y + labelRadius * sin(textAngleRadians).toFloat()
 
+                drawRoundRect(
+                    Color.White,
+                    topLeft = Offset(labelX + 25, labelY),
+                    size = Size(160f, 90f),
+                    cornerRadius = CornerRadius(16f)
+                )
+
                 // Отрисовка значения занятой доли в каждой части канваса,
                 drawContext.canvas.nativeCanvas.drawText(
                     "${parts[i]}%",
-                    labelX,
-                    labelY,
+                    labelX + 55,
+                    labelY + 55,
                     textPaint
                 )
 
                 // Отрисовка текста в центре канваса
                 drawIntoCanvas {
-                    val textPaints = Paint().asFrameworkPaint().apply {
-                        isAntiAlias = true
-                        textSize = 50f
-                    }
-
                     val textBounds = android.graphics.Rect()
-                    textPaints.getTextBounds(selectedMonths, 0, selectedMonths.length, textBounds)
+                    textPaintCenterTop.getTextBounds(
+                        selectedMonths,
+                        0,
+                        selectedMonths.length,
+                        textBounds
+                    )
                     it.nativeCanvas.drawText(
                         selectedMonths,
                         size.width / 2f - textBounds.exactCenterX(),
                         size.height / 2f + textBounds.exactCenterY(),
-                        textPaints
+                        textPaintCenterTop
                     )
                 }
 
                 drawIntoCanvas {
-                    val textPaints = Paint().asFrameworkPaint().apply {
-                        isAntiAlias = true
-                        textSize = 50f
-                    }
-
                     val textBounds = android.graphics.Rect()
-                    textPaints.getTextBounds(selectedMonths, 0, selectedMonths.length, textBounds)
+                    textPaintCenterBottom.getTextBounds(
+                        selectedMonths,
+                        0,
+                        selectedMonths.length,
+                        textBounds
+                    )
                     it.nativeCanvas.drawText(
                         (valueSum * 5 + 720).toString() + "$",
                         size.width / 2f - textBounds.exactCenterX(),
-                        size.height / 1.6f + textBounds.exactCenterY(),
-                        textPaints
+                        size.height / 1.63f + textBounds.exactCenterY(),
+                        textPaintCenterBottom
                     )
                 }
 
@@ -255,11 +275,9 @@ fun calculateAngle(offset: Offset, size: IntSize): Double {
 }
 
 @Composable
-fun MyContent(months: String, valueSum: Int) {
+fun MyContent(months: String, valueSum: Int, parts: List<Float>) {
     var clickedPart by remember { mutableStateOf("") }
     var selectedColor by remember { mutableStateOf(Background) }
-
-    val parts = remember { listOf(30f, 20f, 10f, 20f, 20f) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -272,7 +290,7 @@ fun MyContent(months: String, valueSum: Int) {
                 .size(280.dp),
             selectedMonths = months,
             parts = parts,
-            valueSum = valueSum
+            valueSum = valueSum,
         ) { _, color ->
             clickedPart = months
             selectedColor = color
