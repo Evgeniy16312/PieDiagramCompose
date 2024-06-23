@@ -85,7 +85,11 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun GreetingPreview() {
         PieDiagramComposeTheme {
-            MyContent("", 1000, listOf(20f, 20f, 10f, 30f, 10f))
+            MyContent(
+                "",
+                1000,
+                listOf(20f, 20f, 10f, 30f, 10f)
+            )
         }
     }
 }

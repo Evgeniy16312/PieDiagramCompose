@@ -1,10 +1,16 @@
 package com.example.piediagramcompose.content
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.TargetBasedAnimation
-import androidx.compose.animation.core.VectorConverter
+import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -21,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -35,9 +40,11 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import com.example.piediagramcompose.R
 import com.example.piediagramcompose.mockData.colorsList
 import com.example.piediagramcompose.mockData.populateList
 import com.example.piediagramcompose.ui.theme.Background
@@ -87,6 +94,14 @@ fun PieChart(
         mutableStateOf(false)
     }
 
+    var currentMonths by remember { mutableStateOf(selectedMonths) }
+
+    if (currentMonths != selectedMonths) {
+        selectedPart = -1 // Очищаем выбранный элемент
+        colorPart = Background // Сбрасываем цвет выбранного элемента
+        currentMonths = selectedMonths
+    }
+
     val animateSize by animateFloatAsState(
         targetValue =
         if (animationPlayed) radiusOuter.value * 2f else 0f,
@@ -133,6 +148,7 @@ fun PieChart(
                 }
             },
     ) {
+
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
@@ -157,9 +173,8 @@ fun PieChart(
                         cap = StrokeCap.Round
                     )
                 )
-
-                val labelRadius =
-                    size.minDimension / 2f // Радиус, на котором должен находиться текст
+                // Радиус, на котором должен находиться текст
+                val labelRadius = size.minDimension / 2f
                 val textAngleDegrees = startAngle + sweepAngle / 2 - space.toPx() / 2
                 val textAngleRadians = Math.toRadians(textAngleDegrees.toDouble())
                 val labelX = center.x + labelRadius * cos(textAngleRadians).toFloat()
@@ -219,50 +234,96 @@ fun PieChart(
     }
 
     SalesListComposable(
-        populateList(valueSum), color = colorPart, selected = selectedPart
+        populateList(valueSum),
+        color = colorPart,
+        selected = selectedPart,
+        onClick = { }
     )
 }
 
 @Composable
-fun SalesListComposable(items: List<SalesList>, color: Color, selected: Int) {
-    val state by remember { mutableStateOf(false) }
-    val anim = remember {
-        TargetBasedAnimation(
-            animationSpec = tween(durationMillis = 3500),
-            typeConverter = Float.VectorConverter,
-            initialValue = 0f,
-            targetValue = 700f,
-        )
-    }
+fun SalesListComposable(
+    items: List<SalesList>,
+    color: Color,
+    selected: Int,
+    onClick: () -> Unit,
+) {
     val selectedColor by remember { mutableStateOf(Color.White) }
-    var playTime by remember { mutableStateOf(0L) }
-    var animationValue by remember { mutableStateOf(0) }
-
-    LaunchedEffect(state) {
-        val startTime = withFrameNanos { it }
-        do {
-            playTime = withFrameNanos { it } - startTime
-            animationValue = anim.getValueFromNanos(playTime).toInt()
-        } while (!anim.isFinishedFromNanos(playTime))
+    var visible by remember { mutableStateOf(false) }
+    val transition = updateTransition(visible, label = "visibility")
+    val offsetY = transition.animateDp(
+        transitionSpec = {
+            tween(durationMillis = 1000)
+        }, label = ""
+    ) { visibility ->
+        if (visibility) 0.dp else (500).dp
     }
 
-    LazyColumn(
-        modifier = Modifier
-            .size(animationValue.dp),
+    val iconList = remember {
+        mutableListOf(
+            R.drawable.ic_badge,
+            R.drawable.ic_laptop,
+            R.drawable.ic_savings,
+            R.drawable.ic_surprize,
+        ).shuffled()
+    } // Перемешиваем список иконок один раз
+
+    LaunchedEffect(visible) {
+        visible = true
+    }
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
     ) {
-        itemsIndexed(items) { index, item ->
-            SalesListItem(item = item,
-                color = if (index == selected) {
-                    color
-                } else {
-                    selectedColor
-                },
-                onClick = {
+        LazyColumn(
+            modifier = Modifier.padding(top = offsetY.value)
+        ) {
+
+            itemsIndexed(items) { index, item ->
+                AnimatedVisibility(
+                    visible = visible,
+                    enter = slideInVertically(
+                        initialOffsetY = { -500 }
+                    ) + fadeIn(),
+                    exit = slideOutVertically() + fadeOut(),
+                ) {
+                    SalesListItem(item = item,
+                        icon = iconList[index % iconList.size],
+                        color = animateColorAsState(
+                            targetValue = if (index == selected) color else selectedColor,
+                            animationSpec = tween(durationMillis = 1000),
+                            label = ""
+                        ).value,
+                        onClick = {
+                            onClick()
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 }
+
+@Composable
+fun animateStrokeWidth(
+    index: Int,
+    selectedPart: Int,
+    strokeWidth: Dp,
+    strokeWidthClick: Dp,
+    density: Density // Параметр density для доступа к конверсии Dp в Px
+): Float {
+    val targetWidth = if (index == selectedPart) strokeWidthClick else strokeWidth
+    return with(density) {
+        animateFloatAsState(
+            targetValue = targetWidth.toPx(),
+            animationSpec = tween(
+                durationMillis = 1000,
+                easing = LinearOutSlowInEasing
+            )
+        ).value
+    }
+}
+
 
 fun calculateAngle(offset: Offset, size: IntSize): Double {
     val x = offset.x

@@ -25,23 +25,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.piediagramcompose.R
 import com.example.piediagramcompose.ui.theme.Background
-import com.example.piediagramcompose.ui.theme.GreyLight
-
 
 @Composable
 fun SalesListItem(
+    icon: Int,
     color: Color,
     item: SalesList,
     onClick: () -> Unit,
 ) {
-    val iconList = mutableListOf(
-        R.drawable.ic_badge,
-        R.drawable.ic_laptop,
-        R.drawable.ic_savings,
-        R.drawable.ic_surprize,
-    )
     Box(
         modifier = Modifier
             .background(Background)
@@ -67,7 +59,7 @@ fun SalesListItem(
                     .size(76.dp, 54.dp)
                     .fillMaxSize(),
                 contentScale = ContentScale.Fit,
-                painter = painterResource(id = iconList.random()),
+                painter = painterResource(id = icon),
                 contentDescription = "Content",
                 alignment = Alignment.Center
             )
@@ -95,7 +87,7 @@ fun SalesListItem(
                         maxLines = 1,
                         fontSize = 18.sp,
                         overflow = TextOverflow.Ellipsis,
-                        color = GreyLight,
+                        color = Color.DarkGray,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
