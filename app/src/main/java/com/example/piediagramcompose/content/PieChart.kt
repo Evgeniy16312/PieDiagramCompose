@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -123,6 +122,9 @@ fun PieChart(
         label = ""
     )
 
+    var previousSelectedPart by remember { mutableStateOf(-1) }
+    var previousColorPart by remember { mutableStateOf(Background) }
+
     LaunchedEffect(key1 = true) {
         animationPlayed = true
     }
@@ -137,9 +139,11 @@ fun PieChart(
                     var currentAngle = 0f
                     for ((index, partAngle) in angles.withIndex()) {
                         if (currentAngle + partAngle > anglePoint) {
+                            previousSelectedPart = selectedPart
                             selectedPart = index
                             val selectedColor = colorsList[index]
                             onPartClick(index, selectedColor)
+                            previousColorPart = colorPart
                             colorPart = selectedColor
                             break
                         }
@@ -169,7 +173,11 @@ fun PieChart(
                     ),
                     size = Size(size.minDimension, size.minDimension),
                     style = Stroke(
-                        width = if (i == selectedPart) strokeWidthClick.toPx() else strokeWidth.toPx(),
+                        width = when (i) {
+                            selectedPart -> strokeWidthClick.toPx()
+                            previousSelectedPart -> strokeWidth.toPx()
+                            else -> strokeWidth.toPx()
+                        },
                         cap = StrokeCap.Round
                     )
                 )
@@ -291,7 +299,7 @@ fun SalesListComposable(
                         icon = iconList[index % iconList.size],
                         color = animateColorAsState(
                             targetValue = if (index == selected) color else selectedColor,
-                            animationSpec = tween(durationMillis = 1000),
+                            animationSpec = tween(durationMillis = 500),
                             label = ""
                         ).value,
                         onClick = {
@@ -303,27 +311,6 @@ fun SalesListComposable(
         }
     }
 }
-
-@Composable
-fun animateStrokeWidth(
-    index: Int,
-    selectedPart: Int,
-    strokeWidth: Dp,
-    strokeWidthClick: Dp,
-    density: Density // Параметр density для доступа к конверсии Dp в Px
-): Float {
-    val targetWidth = if (index == selectedPart) strokeWidthClick else strokeWidth
-    return with(density) {
-        animateFloatAsState(
-            targetValue = targetWidth.toPx(),
-            animationSpec = tween(
-                durationMillis = 1000,
-                easing = LinearOutSlowInEasing
-            )
-        ).value
-    }
-}
-
 
 fun calculateAngle(offset: Offset, size: IntSize): Double {
     val x = offset.x
