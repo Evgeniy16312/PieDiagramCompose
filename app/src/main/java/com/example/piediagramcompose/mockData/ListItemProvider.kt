@@ -4,11 +4,11 @@ import com.example.piediagramcompose.content.SalesList
 
 fun populateList(value: Int): List<SalesList> {
     return listOf(
-        SalesList("entertainment", "last month: $value$", "${value + 45}$"),
-        SalesList("sport", "last month: $value$", "${value + 125}$"),
-        SalesList("car", "last month: $value$", "${value - 45}$"),
-        SalesList("market", "last month: $value$", "${value + 145}$"),
-        SalesList("trips", "last month: $value$", "${value + 450}$"),
+        SalesList("entertainment", "last month: ${value} Pуб.", "${value + 45} Pуб."),
+        SalesList("sport", "last month: ${value} Pуб.", "${value + 125} Pуб."),
+        SalesList("car", "last month: ${value} Pуб.", "${value - 45} Pуб."),
+        SalesList("market", "last month: ${value} Pуб.", "${value + 145} Pуб."),
+        SalesList("trips", "last month: ${value} Pуб.", "${value + 450} Pуб."),
     )
 }
 

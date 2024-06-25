@@ -73,7 +73,7 @@ fun PieChart(
     val textPaintCenterTop = Paint().asFrameworkPaint().apply {
         isAntiAlias = true
         textSize = 60f
-        color = android.graphics.Color.GRAY
+        color = android.graphics.Color.DKGRAY
     }
 
     val textPaintCenterBottom = Paint().asFrameworkPaint().apply {
@@ -122,9 +122,6 @@ fun PieChart(
         label = ""
     )
 
-    var previousSelectedPart by remember { mutableStateOf(-1) }
-    var previousColorPart by remember { mutableStateOf(Background) }
-
     LaunchedEffect(key1 = true) {
         animationPlayed = true
     }
@@ -139,11 +136,9 @@ fun PieChart(
                     var currentAngle = 0f
                     for ((index, partAngle) in angles.withIndex()) {
                         if (currentAngle + partAngle > anglePoint) {
-                            previousSelectedPart = selectedPart
                             selectedPart = index
                             val selectedColor = colorsList[index]
                             onPartClick(index, selectedColor)
-                            previousColorPart = colorPart
                             colorPart = selectedColor
                             break
                         }
@@ -175,7 +170,6 @@ fun PieChart(
                     style = Stroke(
                         width = when (i) {
                             selectedPart -> strokeWidthClick.toPx()
-                            previousSelectedPart -> strokeWidth.toPx()
                             else -> strokeWidth.toPx()
                         },
                         cap = StrokeCap.Round
@@ -188,21 +182,20 @@ fun PieChart(
                 val labelX = center.x + labelRadius * cos(textAngleRadians).toFloat()
                 val labelY = center.y + labelRadius * sin(textAngleRadians).toFloat()
 
+                // Отрисовка контейнера где лежат значения занятой доли в каждой части канваса
                 drawRoundRect(
                     Color.White,
                     topLeft = Offset(labelX + 25, labelY),
                     size = Size(160f, 90f),
                     cornerRadius = CornerRadius(16f)
                 )
-
-                // Отрисовка значения занятой доли в каждой части канваса,
+                // Отрисовка значения занятой доли в каждой части канваса
                 drawContext.canvas.nativeCanvas.drawText(
                     "${parts[i]}%",
                     labelX + 55,
                     labelY + 55,
                     textPaint
                 )
-
                 // Отрисовка текста в центре канваса
                 drawIntoCanvas {
                     val textBounds = android.graphics.Rect()
@@ -219,7 +212,6 @@ fun PieChart(
                         textPaintCenterTop
                     )
                 }
-
                 drawIntoCanvas {
                     val textBounds = android.graphics.Rect()
                     textPaintCenterBottom.getTextBounds(
@@ -229,7 +221,7 @@ fun PieChart(
                         textBounds
                     )
                     it.nativeCanvas.drawText(
-                        (valueSum * 5 + 720).toString() + "$",
+                        (valueSum * 5 + 720).toString() + " Pуб.",
                         size.width / 2f - textBounds.exactCenterX(),
                         size.height / 1.63f + textBounds.exactCenterY(),
                         textPaintCenterBottom
