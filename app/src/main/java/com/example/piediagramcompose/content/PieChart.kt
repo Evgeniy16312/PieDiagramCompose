@@ -2,6 +2,7 @@ package com.example.piediagramcompose.content
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloatAsState
@@ -61,8 +62,8 @@ fun PieChart(
     parts: List<Float>,
     onPartClick: (Int, Color) -> Unit,
 ) {
-    val strokeWidth = 25.dp
-    val strokeWidthClick = 45.dp
+    val strokeWidth = 65.dp
+    val strokeWidthClick = 85.dp
     val space = 7.dp
     val textPaint = Paint().asFrameworkPaint().apply {
         isAntiAlias = true
@@ -83,11 +84,15 @@ fun PieChart(
     }
 
     var selectedPart by remember { mutableStateOf(-1) }
-
     var colorPart by remember { mutableStateOf(Background) }
+    var previousSelectedPart by remember { mutableStateOf(-1) }
 
     val total = parts.sum()
     val angles = parts.map { it / total * 360 }
+
+    val strokeWidthAnimatables = remember(parts.size) {
+        parts.map { Animatable(strokeWidth.value) }
+    }
 
     var animationPlayed by remember {
         mutableStateOf(false)
@@ -102,14 +107,15 @@ fun PieChart(
     }
 
     val animateSize by animateFloatAsState(
-        targetValue =
-        if (animationPlayed) radiusOuter.value * 2f else 0f,
+        targetValue = radiusOuter.value * 2f,
         animationSpec = tween(
             durationMillis = animDuration,
-            delayMillis = 0,
             easing = LinearOutSlowInEasing
         ),
-        label = ""
+        finishedListener = {
+            // Анимация закончена, можно обновить состояние
+            previousSelectedPart = selectedPart
+        }, label = ""
     )
 
     val animateRotation by animateFloatAsState(
@@ -136,10 +142,13 @@ fun PieChart(
                     var currentAngle = 0f
                     for ((index, partAngle) in angles.withIndex()) {
                         if (currentAngle + partAngle > anglePoint) {
-                            selectedPart = index
-                            val selectedColor = colorsList[index]
-                            onPartClick(index, selectedColor)
-                            colorPart = selectedColor
+                            if (selectedPart != index) {
+                                previousSelectedPart = selectedPart
+                                selectedPart = index
+                                val selectedColor = colorsList[index]
+                                onPartClick(index, selectedColor)
+                                colorPart = selectedColor
+                            }
                             break
                         }
                         currentAngle += partAngle
@@ -168,10 +177,7 @@ fun PieChart(
                     ),
                     size = Size(size.minDimension, size.minDimension),
                     style = Stroke(
-                        width = when (i) {
-                            selectedPart -> strokeWidthClick.toPx()
-                            else -> strokeWidth.toPx()
-                        },
+                        width = strokeWidthAnimatables[i].value,
                         cap = StrokeCap.Round
                     )
                 )
@@ -233,6 +239,28 @@ fun PieChart(
         }
     }
 
+    // Запуск анимации изменения толщины stroke после обновления состояния selectedPart и previousSelectedPart
+    LaunchedEffect(selectedPart) {
+        if (previousSelectedPart != -1 && previousSelectedPart != selectedPart) {
+            strokeWidthAnimatables[previousSelectedPart].animateTo(
+                targetValue = strokeWidth.value,
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = LinearOutSlowInEasing
+                )
+            )
+        }
+        if (selectedPart != -1) {
+            strokeWidthAnimatables[selectedPart].animateTo(
+                targetValue = strokeWidthClick.value,
+                animationSpec = tween(
+                    durationMillis = 300,
+                    easing = LinearOutSlowInEasing
+                )
+            )
+        }
+    }
+
     SalesListComposable(
         populateList(valueSum),
         color = colorPart,
@@ -291,7 +319,7 @@ fun SalesListComposable(
                         icon = iconList[index % iconList.size],
                         color = animateColorAsState(
                             targetValue = if (index == selected) color else selectedColor,
-                            animationSpec = tween(durationMillis = 500),
+                            animationSpec = tween(durationMillis = 1000),
                             label = ""
                         ).value,
                         onClick = {
