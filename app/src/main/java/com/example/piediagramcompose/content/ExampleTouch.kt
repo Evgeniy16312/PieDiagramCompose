@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,9 +25,9 @@ import androidx.compose.ui.unit.dp
 
 class ExampleTouch {
     @Composable
-    fun TouchableCanvasElementForDetectTapGestures() {
-        var lastTouchX by remember { mutableStateOf(30f) }
-        var lastTouchY by remember { mutableStateOf(30f) }
+    fun TouchableCanvasElementPointerInput() {
+        var lastTouchX by remember { mutableFloatStateOf(30f) }
+        var lastTouchY by remember { mutableFloatStateOf(30f) }
         var isTouching by remember { mutableStateOf(false) }
         Box(
             modifier = Modifier
@@ -63,14 +64,14 @@ class ExampleTouch {
     @Preview
     @Composable
     fun TouchDetectTapGesturesPreview() {
-        TouchableCanvasElementForDetectTapGestures()
+        TouchableCanvasElementPointerInput()
     }
 
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
-    fun TouchableCanvasElementForMotionEvent() {
-        val lastTouchX = remember { mutableStateOf(30f) }
-        val lastTouchY = remember { mutableStateOf(30f) }
+    fun TouchableCanvasElementForPointerInteropFilter() {
+        val lastTouchX = remember { mutableFloatStateOf(30f) }
+        val lastTouchY = remember { mutableFloatStateOf(30f) }
         val isTouching = remember { mutableStateOf(false) }
 
         Box(
@@ -100,7 +101,7 @@ class ExampleTouch {
                     drawCircle(
                         color = Color.Black,
                         radius = 20.dp.toPx(),
-                        center = Offset(lastTouchX.value, lastTouchY.value)
+                        center = Offset(lastTouchX.floatValue, lastTouchY.floatValue)
                     )
                 }
             }
@@ -119,6 +120,6 @@ class ExampleTouch {
     @Preview
     @Composable
     fun TouchPreview() {
-        TouchableCanvasElementForMotionEvent()
+        TouchableCanvasElementForPointerInteropFilter()
     }
 }

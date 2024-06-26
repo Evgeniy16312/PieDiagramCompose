@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -62,8 +63,8 @@ fun PieChart(
     parts: List<Float>,
     onPartClick: (Int, Color) -> Unit,
 ) {
-    val strokeWidth = 65.dp
-    val strokeWidthClick = 85.dp
+    val strokeWidth = 50.dp
+    val strokeWidthClick = 95.dp
     val space = 7.dp
     val textPaint = Paint().asFrameworkPaint().apply {
         isAntiAlias = true
@@ -83,9 +84,11 @@ fun PieChart(
         color = android.graphics.Color.BLACK
     }
 
-    var selectedPart by remember { mutableStateOf(-1) }
+    var selectedPart by remember { mutableIntStateOf(-1) }
     var colorPart by remember { mutableStateOf(Background) }
-    var previousSelectedPart by remember { mutableStateOf(-1) }
+    var previousSelectedPart by remember { mutableIntStateOf(-1) }
+
+    var rotationAngle by remember { mutableStateOf(0f) }
 
     val total = parts.sum()
     val angles = parts.map { it / total * 360 }
@@ -100,10 +103,19 @@ fun PieChart(
 
     var currentMonths by remember { mutableStateOf(selectedMonths) }
 
-    if (currentMonths != selectedMonths) {
-        selectedPart = -1 // Очищаем выбранный элемент
-        colorPart = Background // Сбрасываем цвет выбранного элемента
-        currentMonths = selectedMonths
+    // Проверка на смену месяца и сброс значений
+    LaunchedEffect(selectedMonths) {
+        if (currentMonths != selectedMonths) {
+            selectedPart = -1 // Очищаем выбранный элемент
+            colorPart = Background // Сбрасываем цвет выбранного элемента
+            previousSelectedPart = -1 // Сбрасываем предыдущий выбранный элемент
+            currentMonths = selectedMonths // Обновляем текущий месяц
+            animationPlayed = false // Сбрасываем состояние анимации
+            // Сброс ширины всех stroke к начальным значениям
+            strokeWidthAnimatables.forEach { anim ->
+                anim.snapTo(strokeWidth.value)
+            }
+        }
     }
 
     val animateSize by animateFloatAsState(
@@ -119,18 +131,23 @@ fun PieChart(
     )
 
     val animateRotation by animateFloatAsState(
-        targetValue = if (animationPlayed) 360f else 0f,
+        targetValue = rotationAngle,
         animationSpec = tween(
             durationMillis = animDuration,
-            delayMillis = 0,
             easing = LinearOutSlowInEasing
-        ),
-        label = ""
+        ), label = ""
     )
 
-    LaunchedEffect(key1 = true) {
-        animationPlayed = true
+// Запуск анимации при старте приложения
+    LaunchedEffect(true) {
+        rotationAngle += 360f // Добавляем 360 градусов для одного полного оборота
     }
+
+// Запуск анимации при смене месяца
+    LaunchedEffect(selectedMonths) {
+        rotationAngle += 360f // Добавляем 360 градусов для одного полного оборота
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -239,7 +256,8 @@ fun PieChart(
         }
     }
 
-    // Запуск анимации изменения толщины stroke после обновления состояния selectedPart и previousSelectedPart
+// Запуск анимации изменения толщины stroke после обновления состояния
+// selectedPart и previousSelectedPart
     LaunchedEffect(selectedPart) {
         if (previousSelectedPart != -1 && previousSelectedPart != selectedPart) {
             strokeWidthAnimatables[previousSelectedPart].animateTo(
@@ -265,7 +283,7 @@ fun PieChart(
         populateList(valueSum),
         color = colorPart,
         selected = selectedPart,
-        onClick = { }
+        onClick = {}
     )
 }
 

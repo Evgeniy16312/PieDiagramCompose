@@ -64,7 +64,7 @@ data class ArcData(
 )
 
 @Composable
-fun TouchableCanvasElementForDetectTapGestures(onTap: () -> Unit) {
+fun TouchableCanvasElementPointerInput(onTap: () -> Unit) {
     Canvas(
         modifier = Modifier
             .pointerInput(Unit) {
@@ -82,7 +82,7 @@ fun TouchableCanvasElementForDetectTapGestures(onTap: () -> Unit) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun TouchableCanvasElementForMotionEvent(onTap: () -> Unit) {
+fun TouchableCanvasElementForPointerInteropFilter(onTap: () -> Unit) {
     Canvas(modifier = Modifier.pointerInteropFilter {
         when (it.action) {
             MotionEvent.ACTION_DOWN -> {
