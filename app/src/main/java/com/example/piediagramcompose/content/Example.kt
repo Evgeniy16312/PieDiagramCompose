@@ -1,20 +1,15 @@
 package com.example.piediagramcompose.content
 
-import android.view.MotionEvent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -56,45 +51,8 @@ fun MultiArcPreview() {
     MultiArcExample()
 }
 
-
 data class ArcData(
     val color: Color,
     val startAngle: Float,
     val sweepAngle: Float
 )
-
-@Composable
-fun TouchableCanvasElementPointerInput(onTap: () -> Unit) {
-    Canvas(
-        modifier = Modifier
-            .pointerInput(Unit) {
-                detectTapGestures { tapOffset ->
-                    onTap()
-                }
-            }
-    ) {
-        drawCircle(
-            color = Color.Blue,
-            radius = 50f,
-            center = Offset(size.width / 2f, size.height / 2f))
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun TouchableCanvasElementForPointerInteropFilter(onTap: () -> Unit) {
-    Canvas(modifier = Modifier.pointerInteropFilter {
-        when (it.action) {
-            MotionEvent.ACTION_DOWN -> {
-                onTap()
-                true
-            }
-            else -> false
-        }
-    }) {
-        drawCircle(
-            color = Color.Blue,
-            radius = 50f,
-            center = Offset(size.width / 2f, size.height / 2f))
-    }
-}

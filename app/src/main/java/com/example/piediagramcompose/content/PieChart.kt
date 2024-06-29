@@ -103,21 +103,6 @@ fun PieChart(
 
     var currentMonths by remember { mutableStateOf(selectedMonths) }
 
-    // Проверка на смену месяца и сброс значений
-    LaunchedEffect(selectedMonths) {
-        if (currentMonths != selectedMonths) {
-            selectedPart = -1 // Очищаем выбранный элемент
-            colorPart = Background // Сбрасываем цвет выбранного элемента
-            previousSelectedPart = -1 // Сбрасываем предыдущий выбранный элемент
-            currentMonths = selectedMonths // Обновляем текущий месяц
-            animationPlayed = false // Сбрасываем состояние анимации
-            // Сброс ширины всех stroke к начальным значениям
-            strokeWidthAnimatables.forEach { anim ->
-                anim.snapTo(strokeWidth.value)
-            }
-        }
-    }
-
     val animateSize by animateFloatAsState(
         targetValue = radiusOuter.value * 2f,
         animationSpec = tween(
@@ -138,16 +123,29 @@ fun PieChart(
         ), label = ""
     )
 
+    // Проверка на смену месяца и сброс значений
+    LaunchedEffect(selectedMonths) {
+        if (currentMonths != selectedMonths) {
+            selectedPart = -1 // Очищаем выбранный элемент
+            colorPart = Background // Сбрасываем цвет выбранного элемента
+            previousSelectedPart = -1 // Сбрасываем предыдущий выбранный элемент
+            currentMonths = selectedMonths // Обновляем текущий месяц
+            animationPlayed = false // Сбрасываем состояние анимации
+            // Сброс ширины всех stroke к начальным значениям
+            strokeWidthAnimatables.forEach { anim ->
+                anim.snapTo(strokeWidth.value)
+            }
+        }
+    }
+
 // Запуск анимации при старте приложения
     LaunchedEffect(true) {
-        rotationAngle += 360f // Добавляем 360 градусов для одного полного оборота
+        rotationAngle += 360f
     }
-
 // Запуск анимации при смене месяца
     LaunchedEffect(selectedMonths) {
-        rotationAngle += 360f // Добавляем 360 градусов для одного полного оборота
+        rotationAngle += 360f
     }
-
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -173,7 +171,6 @@ fun PieChart(
                 }
             },
     ) {
-
         Canvas(
             modifier = Modifier
                 .fillMaxSize()
@@ -250,7 +247,6 @@ fun PieChart(
                         textPaintCenterBottom
                     )
                 }
-
                 startAngle += sweepAngle
             }
         }
@@ -304,7 +300,6 @@ fun SalesListComposable(
     ) { visibility ->
         if (visibility) 0.dp else (500).dp
     }
-
     val iconList = remember {
         mutableListOf(
             R.drawable.ic_badge,
@@ -324,7 +319,6 @@ fun SalesListComposable(
         LazyColumn(
             modifier = Modifier.padding(top = offsetY.value)
         ) {
-
             itemsIndexed(items) { index, item ->
                 AnimatedVisibility(
                     visible = visible,

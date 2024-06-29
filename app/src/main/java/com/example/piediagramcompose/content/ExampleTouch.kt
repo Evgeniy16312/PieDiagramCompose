@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 class ExampleTouch {
+
     @Composable
     fun TouchableCanvasElementPointerInput() {
         var lastTouchX by remember { mutableFloatStateOf(30f) }
@@ -73,7 +74,6 @@ class ExampleTouch {
         val lastTouchX = remember { mutableFloatStateOf(30f) }
         val lastTouchY = remember { mutableFloatStateOf(30f) }
         val isTouching = remember { mutableStateOf(false) }
-
         Box(
             modifier = Modifier
                 .fillMaxHeight()
@@ -82,13 +82,13 @@ class ExampleTouch {
                     when (motionEvent.actionMasked) {
                         MotionEvent.ACTION_DOWN -> {
                             isTouching.value = true
-                            updatePosition(motionEvent, lastTouchX, lastTouchY)
+                            lastTouchX.floatValue = motionEvent.x
+                            lastTouchY.floatValue = motionEvent.y
                         }
-
                         MotionEvent.ACTION_MOVE -> {
-                            updatePosition(motionEvent, lastTouchX, lastTouchY)
+                            lastTouchX.floatValue = motionEvent.x
+                            lastTouchY.floatValue = motionEvent.y
                         }
-
                         MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                             isTouching.value = false
                         }
@@ -106,15 +106,6 @@ class ExampleTouch {
                 }
             }
         }
-    }
-
-    private fun updatePosition(
-        motionEvent: MotionEvent,
-        lastTouchX: androidx.compose.runtime.MutableState<Float>,
-        lastTouchY: androidx.compose.runtime.MutableState<Float>
-    ) {
-        lastTouchX.value = motionEvent.x
-        lastTouchY.value = motionEvent.y
     }
 
     @Preview
