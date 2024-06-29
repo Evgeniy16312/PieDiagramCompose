@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -84,16 +85,16 @@ fun PieChart(
         color = android.graphics.Color.BLACK
     }
 
-    var selectedPart by remember { mutableIntStateOf(-1) }
-    var colorPart by remember { mutableStateOf(Background) }
-    var previousSelectedPart by remember { mutableIntStateOf(-1) }
-
-    var rotationAngle by remember { mutableStateOf(0f) }
-
     val total = parts.sum()
     val angles = parts.map { it / total * 360 }
 
-    val strokeWidthAnimatables = remember(parts.size) {
+    var colorPart by remember { mutableStateOf(Background) }
+    var rotationAngle by remember { mutableFloatStateOf(0f) }
+
+    var selectedPart by remember { mutableIntStateOf(-1) }
+    var previousSelectedPart by remember { mutableIntStateOf(-1) }
+
+    val strokeWidthAnimates = remember(parts.size) {
         parts.map { Animatable(strokeWidth.value) }
     }
 
@@ -132,7 +133,7 @@ fun PieChart(
             currentMonths = selectedMonths // Обновляем текущий месяц
             animationPlayed = false // Сбрасываем состояние анимации
             // Сброс ширины всех stroke к начальным значениям
-            strokeWidthAnimatables.forEach { anim ->
+            strokeWidthAnimates.forEach { anim ->
                 anim.snapTo(strokeWidth.value)
             }
         }
@@ -191,7 +192,7 @@ fun PieChart(
                     ),
                     size = Size(size.minDimension, size.minDimension),
                     style = Stroke(
-                        width = strokeWidthAnimatables[i].value,
+                        width = strokeWidthAnimates[i].value,
                         cap = StrokeCap.Round
                     )
                 )
@@ -256,7 +257,7 @@ fun PieChart(
 // selectedPart и previousSelectedPart
     LaunchedEffect(selectedPart) {
         if (previousSelectedPart != -1 && previousSelectedPart != selectedPart) {
-            strokeWidthAnimatables[previousSelectedPart].animateTo(
+            strokeWidthAnimates[previousSelectedPart].animateTo(
                 targetValue = strokeWidth.value,
                 animationSpec = tween(
                     durationMillis = 300,
@@ -265,7 +266,7 @@ fun PieChart(
             )
         }
         if (selectedPart != -1) {
-            strokeWidthAnimatables[selectedPart].animateTo(
+            strokeWidthAnimates[selectedPart].animateTo(
                 targetValue = strokeWidthClick.value,
                 animationSpec = tween(
                     durationMillis = 300,
