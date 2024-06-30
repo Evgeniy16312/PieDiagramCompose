@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -47,13 +47,17 @@ class MainActivity : ComponentActivity() {
                                     top = 16.dp
                                 )
                         ) {
-                            var selectedItemIndex by remember { mutableStateOf(0) }
-                            val valueSum = (10 until 500).random()
-                            val valuePartOne = (10 until 30).random().toFloat()
-                            val valuePartTwo = (10 until 30).random().toFloat()
-                            val valuePartThree = (10 until 30).random().toFloat()
-                            val valuePartFour = (10 until 30).random().toFloat()
-                            val valuePartFive = (10 until 30).random().toFloat()
+                            var selectedItemIndex by remember { mutableIntStateOf(0) }
+                            val valueOne = (10 until 100).random()
+                            val valueTwo = (10 until 200).random()
+                            val valueThree = (10 until 300).random()
+                            val valueFour = (10 until 400).random()
+                            val valueFive = (10 until 500).random()
+                            val valuePartOne = (10 until 15).random().toFloat()
+                            val valuePartTwo = (15 until 20).random().toFloat()
+                            val valuePartThree = (20 until 25).random().toFloat()
+                            val valuePartFour = (25 until 30).random().toFloat()
+                            val valuePartFive = (30 until 35).random().toFloat()
 
                             FilterChipGroupMonths(
                                 items = chipMonthsList,
@@ -64,7 +68,11 @@ class MainActivity : ComponentActivity() {
                             if (selectedItemIndex <= 11) {
                                 MyContent(
                                     chipMonthsList[selectedItemIndex],
-                                    valueSum,
+                                    valueOne = valueOne,
+                                    valueTwo = valueTwo,
+                                    valueThree = valueThree,
+                                    valueFour = valueFour,
+                                    valueFive = valueFive,
                                     ListValueParts(
                                         valuePartOne,
                                         valuePartTwo,
@@ -87,7 +95,11 @@ class MainActivity : ComponentActivity() {
         PieDiagramComposeTheme {
             MyContent(
                 "",
-                1000,
+                valueOne = 100,
+                valueTwo = 1000,
+                valueThree = 1000,
+                valueFour = 100,
+                valueFive = 100,
                 listOf(20f, 20f, 10f, 30f, 10f)
             )
         }

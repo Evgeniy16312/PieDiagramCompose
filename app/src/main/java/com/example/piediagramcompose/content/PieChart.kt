@@ -58,7 +58,11 @@ import kotlin.math.sin
 fun PieChart(
     modifier: Modifier = Modifier,
     selectedMonths: String,
-    valueSum: Int,
+    valueOne: Int,
+    valueTwo: Int,
+    valueThree: Int,
+    valueFour: Int,
+    valueFive: Int,
     radiusOuter: Dp = 110.dp,
     animDuration: Int = 1000,
     parts: List<Float>,
@@ -242,7 +246,8 @@ fun PieChart(
                         textBounds
                     )
                     it.nativeCanvas.drawText(
-                        (valueSum * 5 + 720).toString() + " Pуб.",
+                        (valueOne + valueTwo + valueThree + valueFour + valueFive
+                                * 5 + 1050).toString() + " Pуб.",
                         size.width / 2f - textBounds.exactCenterX(),
                         size.height / 1.63f + textBounds.exactCenterY(),
                         textPaintCenterBottom
@@ -277,7 +282,7 @@ fun PieChart(
     }
 
     SalesListComposable(
-        populateList(valueSum),
+        populateList(valueOne, valueTwo, valueThree, valueFour, valueFive),
         color = colorPart,
         selected = selectedPart,
         onClick = {}
@@ -356,7 +361,15 @@ fun calculateAngle(offset: Offset, size: IntSize): Double {
 }
 
 @Composable
-fun MyContent(months: String, valueSum: Int, parts: List<Float>) {
+fun MyContent(
+    months: String,
+    valueOne: Int,
+    valueTwo: Int,
+    valueThree: Int,
+    valueFour: Int,
+    valueFive: Int,
+    parts: List<Float>
+) {
     var clickedPart by remember { mutableStateOf("") }
     var selectedColor by remember { mutableStateOf(Background) }
 
@@ -371,7 +384,11 @@ fun MyContent(months: String, valueSum: Int, parts: List<Float>) {
                 .size(280.dp),
             selectedMonths = months,
             parts = parts,
-            valueSum = valueSum,
+            valueOne = valueOne,
+            valueTwo = valueTwo,
+            valueThree = valueThree,
+            valueFour = valueFour,
+            valueFive = valueFive
         ) { _, color ->
             clickedPart = months
             selectedColor = color

@@ -85,7 +85,7 @@ fun SalesListItem(
                     Text(
                         text = item.averageCost,
                         maxLines = 1,
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         overflow = TextOverflow.Ellipsis,
                         color = Color.DarkGray,
                         style = MaterialTheme.typography.bodyMedium
