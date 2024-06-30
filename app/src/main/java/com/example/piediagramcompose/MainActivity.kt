@@ -48,15 +48,15 @@ class MainActivity : ComponentActivity() {
                                 )
                         ) {
                             var selectedItemIndex by remember { mutableIntStateOf(0) }
-                            val valueOne = (10 until 100).random()
-                            val valueTwo = (10 until 200).random()
-                            val valueThree = (10 until 300).random()
-                            val valueFour = (10 until 400).random()
-                            val valueFive = (10 until 500).random()
-                            val valuePartOne = (10 until 15).random().toFloat()
+                            val valueOne = (300 until 400).random()
+                            val valueTwo = (150 until 200).random()
+                            val valueThree = (200 until 300).random()
+                            val valueFour = (50 until 100).random()
+                            val valueFive = (400 until 500).random()
+                            val valuePartOne = (25 until 30).random().toFloat()
                             val valuePartTwo = (15 until 20).random().toFloat()
                             val valuePartThree = (20 until 25).random().toFloat()
-                            val valuePartFour = (25 until 30).random().toFloat()
+                            val valuePartFour = (10 until 15).random().toFloat()
                             val valuePartFive = (30 until 35).random().toFloat()
 
                             FilterChipGroupMonths(
