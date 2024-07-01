@@ -10,14 +10,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -126,4 +130,85 @@ fun ClippingExample() {
 @Composable
 fun ClippingExamplePreview() {
     ClippingExample()
+}
+
+@Composable
+fun CanvasExample() {
+    Canvas(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        // Прямоугольник
+        drawRect(
+            color = Color.Red,
+            topLeft = Offset(50f, 150f),
+            size = Size(100f, 150f)
+        )
+
+        // Овал
+        drawOval(
+            color = Color.Green,
+            topLeft = Offset(200f, 150f),
+            size = Size(150f, 100f)
+        )
+
+        // Круг
+        drawCircle(
+            color = Color.Blue,
+            radius = 50f,
+            center = Offset(450f, 200f)
+        )
+
+        // Линия
+        drawLine(
+            color = Color.Magenta,
+            start = Offset(600f, 150f),
+            end = Offset(700f, 300f),
+            strokeWidth = 5f
+        )
+
+        // Текст
+        drawContext.canvas.nativeCanvas.apply {
+            val textPaint = android.graphics.Paint().apply {
+                color = android.graphics.Color.BLACK
+                textSize = 50f
+            }
+            drawText("Hello, Compose!", 50f, 450f, textPaint)
+        }
+
+        // Путь
+        val path = Path().apply {
+            moveTo(50f, 500f)
+            lineTo(100f, 600f)
+            lineTo(150f, 550f)
+            lineTo(200f, 650f)
+            close()
+        }
+        drawPath(
+            path = path,
+            color = Color.Cyan,
+            style = Stroke(width = 5f)
+        )
+
+        // Дуга
+        drawArc(
+            color = Color.Black,
+            startAngle = 0f,
+            sweepAngle = 180f,
+            useCenter = false,
+            topLeft = Offset(300f, 500f),
+            size = Size(100f, 100f)
+        )
+
+        // Скругленный прямоугольник
+        drawRoundRect(
+            color = Color.Gray,
+            topLeft = Offset(450f, 500f),
+            size = Size(150f, 100f),
+            cornerRadius = CornerRadius(20f, 20f)
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CanvasExamplePreview() {
+    CanvasExample()
 }
