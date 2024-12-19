@@ -46,6 +46,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.piediagramcompose.R
 import com.example.piediagramcompose.mockData.colorsList
 import com.example.piediagramcompose.mockData.populateList
@@ -54,6 +55,7 @@ import com.example.piediagramcompose.ui.theme.Background
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
+
 
 @Composable
 fun PieChart(
@@ -68,6 +70,7 @@ fun PieChart(
     animDuration: Int = 1000,
     parts: List<Float>,
     onPartClick: (Int, Color) -> Unit,
+    navController: NavController
 ) {
     val strokeWidth = 50.dp
     val strokeWidthClick = 95.dp
@@ -286,7 +289,9 @@ fun PieChart(
         populateList(valueOne, valueTwo, valueThree, valueFour, valueFive),
         color = colorPart,
         selected = selectedPart,
-        onClick = {}
+        onClick = {
+            navController.navigate("budget")
+        }
     )
 }
 
@@ -369,7 +374,8 @@ fun MyContent(
     valueThree: Int,
     valueFour: Int,
     valueFive: Int,
-    parts: List<Float>
+    parts: List<Float>,
+    navController: NavController
 ) {
     var clickedPart by remember { mutableStateOf("") }
     var selectedColor by remember { mutableStateOf(Background) }
@@ -389,10 +395,12 @@ fun MyContent(
             valueTwo = valueTwo,
             valueThree = valueThree,
             valueFour = valueFour,
-            valueFive = valueFive
-        ) { _, color ->
-            clickedPart = months
-            selectedColor = color
-        }
+            valueFive = valueFive,
+            navController = navController,
+            onPartClick =
+            { _, color ->
+                clickedPart = months
+                selectedColor = color
+            })
     }
 }

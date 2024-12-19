@@ -51,12 +51,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.piediagramcompose.R
 import com.example.piediagramcompose.mockData.categoriesList
 import com.example.piediagramcompose.model.Category
 
 @Composable
-fun BudgetScreen() {
+fun BudgetScreen(
+    navController: NavController
+) {
     var isBottomSheetVisible by remember { mutableStateOf(false) }
 
     val sliderValues = remember {
@@ -360,5 +364,7 @@ fun BottomSheet(onDismiss: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewBudgetScreen() {
-    BudgetScreen()
+    // Создаем фиктивный NavController
+    val navController = rememberNavController()
+    BudgetScreen(navController = navController)
 }

@@ -33,7 +33,7 @@ fun SalesListItem(
     icon: Int,
     color: Color,
     item: SalesList,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -44,7 +44,9 @@ fun SalesListItem(
             )
             .height(80.dp)
             .clip(RoundedCornerShape(16.dp))
+            .clickable {
 
+            }
     ) {
         Row(
             modifier = Modifier
