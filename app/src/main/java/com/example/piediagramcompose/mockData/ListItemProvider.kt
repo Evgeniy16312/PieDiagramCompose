@@ -1,6 +1,6 @@
 package com.example.piediagramcompose.mockData
 
-import com.example.piediagramcompose.content.SalesList
+import com.example.piediagramcompose.model.SalesList
 
 fun populateList(
     valueOne: Int,

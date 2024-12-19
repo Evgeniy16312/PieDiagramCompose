@@ -1,4 +1,4 @@
-package com.example.piediagramcompose.content
+package com.example.piediagramcompose.example
 
 import android.view.MotionEvent
 import androidx.compose.foundation.Canvas

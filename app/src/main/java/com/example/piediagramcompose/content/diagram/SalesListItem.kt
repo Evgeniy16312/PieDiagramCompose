@@ -1,4 +1,4 @@
-package com.example.piediagramcompose.content
+package com.example.piediagramcompose.content.diagram
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.piediagramcompose.model.SalesList
 import com.example.piediagramcompose.ui.theme.Background
 
 @Composable

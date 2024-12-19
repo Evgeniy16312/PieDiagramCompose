@@ -1,4 +1,4 @@
-package com.example.piediagramcompose.content
+package com.example.piediagramcompose.content.diagram
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height

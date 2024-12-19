@@ -1,4 +1,4 @@
-package com.example.piediagramcompose.content
+package com.example.piediagramcompose.model
 
 data class SalesList(
     val categoriesCost: String,

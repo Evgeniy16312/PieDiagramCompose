@@ -17,8 +17,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.piediagramcompose.content.FilterChipGroupMonths
-import com.example.piediagramcompose.content.MyContent
+import com.example.piediagramcompose.content.diagram.FilterChipGroupMonths
+import com.example.piediagramcompose.content.diagram.MyContent
 import com.example.piediagramcompose.mockData.ListValueParts
 import com.example.piediagramcompose.mockData.chipMonthsList
 import com.example.piediagramcompose.ui.theme.Background

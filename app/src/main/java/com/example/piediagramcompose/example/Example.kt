@@ -1,4 +1,4 @@
-package com.example.piediagramcompose.content
+package com.example.piediagramcompose.example
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background

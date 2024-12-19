@@ -1,4 +1,4 @@
-package com.example.piediagramcompose.content
+package com.example.piediagramcompose.content.diagram
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import com.example.piediagramcompose.R
 import com.example.piediagramcompose.mockData.colorsList
 import com.example.piediagramcompose.mockData.populateList
+import com.example.piediagramcompose.model.SalesList
 import com.example.piediagramcompose.ui.theme.Background
 import kotlin.math.atan2
 import kotlin.math.cos
