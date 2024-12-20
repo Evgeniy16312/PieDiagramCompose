@@ -1,19 +1,14 @@
 package com.example.piediagramcompose.content.budget
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -26,11 +21,15 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -40,15 +39,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -56,12 +52,15 @@ import androidx.navigation.compose.rememberNavController
 import com.example.piediagramcompose.R
 import com.example.piediagramcompose.mockData.categoriesList
 import com.example.piediagramcompose.model.Category
+import com.example.piediagramcompose.ui.theme.Background
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BudgetScreen(
     navController: NavController
 ) {
-    var isBottomSheetVisible by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var isSheetVisible by remember { mutableStateOf(false) }
 
     val sliderValues = remember {
         mutableStateListOf(
@@ -74,17 +73,26 @@ fun BudgetScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFFAF8F5))
+            .background(Background)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        HeaderSection { isBottomSheetVisible = true }
-        RemainingPlanSection(amount = "$${sliderValues.sumOf { it.toInt() }}")
+        HeaderSection {
+            isSheetVisible = true
+        }
+        RemainingPlanSection(
+            amount = stringResource(
+                R.string.rub,
+                sliderValues.sumOf { it.toInt() })
+        )
         CategorySection(categoriesList, sliderValues)
     }
 
-    if (isBottomSheetVisible) {
-        BottomSheet(onDismiss = { isBottomSheetVisible = false })
+    if (isSheetVisible) {
+        BottomSheet(
+            onDismiss = { isSheetVisible = false },
+            sheetState = sheetState
+        )
     }
 }
 
@@ -116,16 +124,18 @@ fun HeaderSection(onSettingsClick: () -> Unit) {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .clip(CircleShape)
-                        .size(46.dp)
+                        .size(36.dp)
                         .padding(2.dp)
                 )
             }
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "Bessie Cooper",
-                fontSize = 32.sp,
+                text = stringResource(R.string.fio),
+                fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(end = 16.dp)
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .fillMaxWidth(0.7f)
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -133,9 +143,9 @@ fun HeaderSection(onSettingsClick: () -> Unit) {
             IconButton(onClick = onSettingsClick) {
                 Icon(
                     modifier = Modifier
-                        .size(46.dp),
+                        .size(36.dp),
                     imageVector = Icons.Default.Settings,
-                    contentDescription = "Settings",
+                    contentDescription = stringResource(R.string.setting),
                     tint = Color.Black
                 )
             }
@@ -158,8 +168,8 @@ fun RemainingPlanSection(amount: String) {
             TextButton(onClick = { isMenuExpanded = true }) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "Remaining Plan",
-                        fontSize = 32.sp,
+                        text = stringResource(R.string.remaining_plan),
+                        fontSize = 28.sp,
                         fontWeight = FontWeight.Normal,
                         color = Color.Gray
                     )
@@ -174,9 +184,11 @@ fun RemainingPlanSection(amount: String) {
             }
             Text(
                 text = amount,
-                fontSize = 42.sp,
+                fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = Color.Black,
+                modifier = Modifier
+                    .padding(start = 12.dp)
             )
         }
 
@@ -186,11 +198,11 @@ fun RemainingPlanSection(amount: String) {
             modifier = Modifier.wrapContentSize(Alignment.TopStart)
         ) {
             DropdownMenuItem(
-                text = { Text("Option 1") },
+                text = { Text(stringResource(R.string.option_1)) },
                 onClick = { isMenuExpanded = false }
             )
             DropdownMenuItem(
-                text = { Text("Option 2") },
+                text = { Text(stringResource(R.string.option_2)) },
                 onClick = { isMenuExpanded = false }
             )
         }
@@ -231,7 +243,7 @@ fun CategoryCard(category: Category, sliderValues: MutableList<Float>, index: In
                     color = Color.White
                 )
                 Text(
-                    text = "$${sliderValues[index].toInt()}",
+                    text = stringResource(R.string.rub, sliderValues[index].toInt()),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
@@ -257,109 +269,29 @@ fun CategoryCard(category: Category, sliderValues: MutableList<Float>, index: In
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomSlider(
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
-    modifier: Modifier,
-    thumbColor: Color,
-    activeTrackColor: Color,
-    inactiveTrackColor: Color,
-    horizontalPadding: Dp,
-    backgroundCircleColor: Color = Color.Black.copy(alpha = 0.1f) // Цвет прозрачного круга
+fun BottomSheet(
+    onDismiss: () -> Unit,
+    sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 ) {
-    BoxWithConstraints(
-        modifier = modifier
-            .height(48.dp) // Увеличенная высота для круга
-            .padding(horizontal = horizontalPadding) // Горизонтальный паддинг
+    ModalBottomSheet(
+        onDismissRequest = { onDismiss() },
+        sheetState = sheetState,
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        containerColor = Color.White
     ) {
-        val trackHeight = 3.dp
-        val thumbRadius = 8.dp
-        val backgroundCircleRadius = 16.dp
-
-        val maxWidth = constraints.maxWidth.toFloat()
-        val progress =
-            ((value - valueRange.start) / (valueRange.endInclusive - valueRange.start)).coerceIn(
-                0f,
-                1f
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = stringResource(R.string.setting),
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
             )
-
-        Canvas(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-        ) {
-            // Пунктирная неактивная дорожка
-            drawLine(
-                color = inactiveTrackColor,
-                start = Offset(0f, center.y),
-                end = Offset(size.width, center.y),
-                strokeWidth = trackHeight.toPx(),
-                pathEffect = PathEffect.dashPathEffect(floatArrayOf(30f, 10f), phase = 0f)
-            )
-
-            // Активная дорожка
-            drawLine(
-                color = activeTrackColor,
-                start = Offset(0f, center.y),
-                end = Offset(size.width * progress, center.y),
-                strokeWidth = trackHeight.toPx()
-            )
-
-            // Прозрачный фон круга
-            drawCircle(
-                color = backgroundCircleColor,
-                radius = backgroundCircleRadius.toPx(),
-                center = Offset(size.width * progress, center.y)
-            )
-
-            // Ползунок
-            drawCircle(
-                color = thumbColor,
-                radius = thumbRadius.toPx(),
-                center = Offset(size.width * progress, center.y)
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .pointerInput(Unit) {
-                    detectDragGestures { change, _ ->
-                        val newProgress = (change.position.x / maxWidth).coerceIn(0f, 1f)
-                        val newValue =
-                            valueRange.start + newProgress * (valueRange.endInclusive - valueRange.start)
-                        onValueChange(newValue)
-                    }
-                }
-        )
-    }
-}
-
-@Composable
-fun BottomSheet(onDismiss: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f))
-            .clickable { onDismiss() },
-        contentAlignment = Alignment.BottomCenter
-    ) {
-        Surface(
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-            color = Color.White,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text("Settings", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                // Add settings content here
-            }
+            // Carousel component
+            Carousel(pageCount = 5)
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

@@ -71,11 +71,14 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     //Constraint layout motion
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
 
     //Splash API
     implementation ("androidx.core:core-splashscreen:1.0.1")
 
     implementation("androidx.navigation:navigation-compose:2.8.5")
     implementation("com.google.accompanist:accompanist-navigation-animation:0.30.1")
+
+    implementation ("androidx.compose.foundation:foundation:1.7.6")
+    implementation("io.coil-kt:coil-compose:2.2.2")
 }

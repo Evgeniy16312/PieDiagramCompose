@@ -58,19 +58,19 @@ private fun drawCustomCardWithInvertedShape(drawScope: DrawScope, color: Color) 
         lineTo(cardWidth / 2 - cutoutWidth / 2, 0f)
 
         // Кривая для выреза
-        quadraticBezierTo(
+        quadraticTo(
             cardWidth / 2, cutoutHeight,
             cardWidth / 2 + cutoutWidth / 2, 0f
         )
 
         lineTo(cardWidth - cornerRadius, 0f)
-        quadraticBezierTo(cardWidth, 0f, cardWidth, cornerRadius)
+        quadraticTo(cardWidth, 0f, cardWidth, cornerRadius)
         lineTo(cardWidth, cardHeight - cornerRadius)
-        quadraticBezierTo(cardWidth, cardHeight, cardWidth - cornerRadius, cardHeight)
+        quadraticTo(cardWidth, cardHeight, cardWidth - cornerRadius, cardHeight)
         lineTo(cornerRadius, cardHeight)
-        quadraticBezierTo(0f, cardHeight, 0f, cardHeight - cornerRadius)
+        quadraticTo(0f, cardHeight, 0f, cardHeight - cornerRadius)
         lineTo(0f, cornerRadius)
-        quadraticBezierTo(0f, 0f, cornerRadius, 0f)
+        quadraticTo(0f, 0f, cornerRadius, 0f)
         close()
     }
 
@@ -79,19 +79,19 @@ private fun drawCustomCardWithInvertedShape(drawScope: DrawScope, color: Color) 
         moveTo(cardWidth / 2 - shapeWidth / 2 + edgeRadius, 0f) // Левое начало с учётом радиуса
 
         // Левое закругление
-        quadraticBezierTo(
+        quadraticTo(
             cardWidth / 2 - shapeWidth / 2, 0f,
             cardWidth / 2 - shapeWidth / 2, edgeRadius
         )
 
         // Нижняя дуга
-        quadraticBezierTo(
+        quadraticTo(
             cardWidth / 2, shapeHeight,
             cardWidth / 2 + shapeWidth / 2, edgeRadius
         )
 
         // Правое закругление
-        quadraticBezierTo(
+        quadraticTo(
             cardWidth / 2 + shapeWidth / 2, 0f,
             cardWidth / 2 + shapeWidth / 2 - edgeRadius, 0f
         )
